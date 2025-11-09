@@ -2,11 +2,7 @@ package main;
 
 public class TestMain {
     public static void main(String[] args) {
-        System.out.println("hi");
-        System.out.println("hello");
-        System.out.println("안녕하세요!");
-        System.out.println("안녕~");
-
-        System.out.println("안녕안녕");
+        VocManager manager = new VocManager("홍길동");
+        manager.makeVoc("res/words.txt");
     }
 }

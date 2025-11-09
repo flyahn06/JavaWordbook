@@ -39,18 +39,55 @@ public class VocManager {
 
     void menu() {
         int choice = 0;
-        while (choice != 3) {
+        boolean running = true;
+
+        while (running) {
             System.out.println("\n------" + userName + "의 단어장 -------");
-            System.out.println("1) 단어검색 2) 단어검색2 3) 종료");
+            System.out.println("1) 단어검색 2) 단어검색2 3) 단어수정 4) 종료");
             System.out.print("메뉴를 선택하세요 : ");
             choice = scan.nextInt();
             scan.nextLine();
             System.out.println();
 
             switch (choice) {
-                case 1-> searchVoc();
-                case 2-> searchVoc2();
-                case 3-> System.out.println(userName + "의 단어장 프로그램을 종료합니다.");
+                case 1 -> searchVoc();
+                case 2 -> searchVoc2();
+                case 3 -> editWord();
+                case 4 -> {
+                    System.out.println(userName + "의 단어장 프로그램을 종료합니다.");
+                    running = false;
+                }
+            }
+        }
+    }
+
+    public void editWord() {
+        Word targetWord;
+
+        System.out.print("수정할 영단어를 입력하세요: ");
+        targetWord = this.searchVoc(scan.nextLine().trim());
+
+        if (targetWord == null) {
+            System.out.println("단어를 찾을 수 없습니다.");
+            return;
+        }
+
+        System.out.println("1) 영단어수정 2) 한글뜻수정");
+        System.out.print("메뉴를 입력하세요: ");
+
+        switch (scan.nextInt()) {
+            case 1 -> {
+                System.out.print("새로운 단어를 입력하세요: ");
+                scan.nextLine();
+                targetWord.setEng(scan.nextLine());
+            }
+            case 2 -> {
+                System.out.print("새로운 뜻을 입력하세요: ");
+                scan.nextLine();
+                targetWord.setKor(scan.nextLine());
+            }
+            default -> {
+                System.out.println("잘못된 옵션입니다.");
             }
         }
     }
@@ -78,5 +115,16 @@ public class VocManager {
             }
         }
     }
+
+    public Word searchVoc(String target) {
+        for (Word s: this.voc) {
+            if (s.eng.equals(target)) {
+                return s;
+            }
+        }
+
+        return null;
+    }
+
 }
 
