@@ -43,7 +43,7 @@ public class VocManager {
 
         while (running) {
             System.out.println("\n------" + userName + "의 단어장 -------");
-            System.out.println("1) 단어검색 2) 단어검색2 3) 단어수정 4) 종료");
+            System.out.println("1) 단어검색 2) 단어검색2 3) 단어수정 4) 단어삭제 5) 전체단어출력 0) 종료");
             System.out.print("메뉴를 선택하세요 : ");
             choice = scan.nextInt();
             scan.nextLine();
@@ -53,12 +53,35 @@ public class VocManager {
                 case 1 -> searchVoc();
                 case 2 -> searchVoc2();
                 case 3 -> editWord();
-                case 4 -> {
+                case 4 -> deleteWord();
+                case 5 -> printAllWords();
+                case 0 -> {
                     System.out.println(userName + "의 단어장 프로그램을 종료합니다.");
                     running = false;
                 }
             }
         }
+    }
+
+    public void printAllWords() {
+        for (Word word: this.voc) {
+            System.out.println(word);
+        }
+    }
+
+    public void deleteWord() {
+        Word targetWord;
+
+        System.out.print("삭제할 영단어를 입력하세요: ");
+        targetWord = this.searchVoc(scan.nextLine().trim());
+
+        if (targetWord == null) {
+            System.out.println("단어를 찾을 수 없습니다.");
+            return;
+        }
+
+
+        System.out.println(this.voc.remove(targetWord));
     }
 
     public void editWord() {

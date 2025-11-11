@@ -27,6 +27,8 @@ public class Word {
     public boolean equals(Object obj) {
         if (obj instanceof String otherEng) {
             return otherEng.equals(this.eng);
+        } else if (obj instanceof Word word) {
+            return word.eng.equals(this.eng);
         }
         return false;
     }
