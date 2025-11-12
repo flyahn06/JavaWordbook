@@ -68,15 +68,15 @@ public class VocManager {
     }
 
     public void WAnotes(Vector<Word> wrongAnswers) { //여기서 전해지는 파라미터는 오답들만 모아놓은 벡터
-        String filename = "오답노트" + String.valueOf(i);
-        try(PrintWriter outfile = new PrintWriter(filename)) {
+        String filename = "오답노트" + i + ".txt";
+        try (PrintWriter outfile = new PrintWriter(filename)) {
             for(Word j : wrongAnswers) {
                 String str = j.eng + "\t" + j.kor;
                 outfile.println(str);
             }
-            System.out.printf("오답노트가 만들어졌습니다.");
+            System.out.println("오답노트가 만들어졌습니다.");
             i++;
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("오류");
         }
     }
@@ -198,7 +198,10 @@ public class VocManager {
                 System.out.print("새 파일의 이름을 입력하세요: ");
                 filename = scan.nextLine();
                 filename = filename.trim().replaceAll("\\s+", "_");
-                filename = "res/"+filename+".txt";
+
+                if (!(filename.indexOf(".txt") == filename.length() - 4))
+                    filename = "res/"+filename+".txt";
+
                 this.vocToFile(filename);
             }
             default -> System.out.println("입력이 잘못되었습니다.");
