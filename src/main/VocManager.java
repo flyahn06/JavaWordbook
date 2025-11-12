@@ -10,7 +10,7 @@ public class VocManager {
     static Scanner scan = new Scanner(System.in);
     Vector<Word> voc = new Vector<>();
     String userName;
-    int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수
+    int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
 
     VocManager(String userName) {
         this.userName = userName;
