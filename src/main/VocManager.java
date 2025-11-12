@@ -2,6 +2,7 @@ package main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -9,6 +10,7 @@ public class VocManager {
     static Scanner scan = new Scanner(System.in);
     Vector<Word> voc = new Vector<>();
     String userName;
+    int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수
 
     VocManager(String userName) {
         this.userName = userName;
@@ -60,6 +62,20 @@ public class VocManager {
                     running = false;
                 }
             }
+        }
+    }
+
+    public void WAnotes(Vector<Word> wrongAnswers) { //여기서 전해지는 파라미터는 오답들만 모아놓은 벡터
+        String filename = "오답노트" + String.valueOf(i);
+        try(PrintWriter outfile = new PrintWriter(filename)) {
+            for(Word j : wrongAnswers) {
+                String str = j.eng + "\t" + j.kor;
+                outfile.println(str);
+            }
+            System.out.printf("오답노트가 만들어졌습니다.");
+            i++;
+        } catch(FileNotFoundException e) {
+            System.out.println("오류");
         }
     }
 
