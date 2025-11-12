@@ -45,7 +45,7 @@ public class VocManager {
 
         while (running) {
             System.out.println("\n------" + userName + "의 단어장 -------");
-            System.out.println("1) 단어검색 2) 단어검색2 3) 단어수정 4) 단어삭제 5) 전체단어출력 0) 종료");
+            System.out.println("1) 단어검색 2) 단어검색2 3) 단어수정 4) 단어삭제 5) 전체단어출력 6) 파일 저장하기 7) 파일 불러오기 0) 종료");
             System.out.print("메뉴를 선택하세요 : ");
             choice = scan.nextInt();
             scan.nextLine();
@@ -57,6 +57,8 @@ public class VocManager {
                 case 3 -> editWord();
                 case 4 -> deleteWord();
                 case 5 -> printAllWords();
+                case 6 -> fileSave();
+                case 7 -> fileLoad();
                 case 0 -> {
                     System.out.println(userName + "의 단어장 프로그램을 종료합니다.");
                     running = false;
@@ -165,5 +167,52 @@ public class VocManager {
         return null;
     }
 
-}
+    public void fileWriter(PrintWriter outfile) {
+        for (Word w : this.voc) {
+            outfile.println(w.getEng() + "\t" + w.getKor());
+        }
+    }
 
+    public void vocToFile(String filename) {
+        try (PrintWriter outfile = new PrintWriter(filename)) {
+            this.fileWriter(outfile);
+            System.out.println("단어장이 '" + filename + "' 파일로 저장되었습니다.");
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void fileSave(){
+        int choice = 0;
+        String filename;
+
+        System.out.println("1) 파일 덮어쓰기 2) 새로운 파일로 저장하기");
+        System.out.print("선택하세요: ");
+        choice = scan.nextInt();
+        scan.nextLine();
+        System.out.println();
+
+        switch (choice) {
+            case 1 -> this.vocToFile("res/words.txt");
+            case 2-> {
+                System.out.print("새 파일의 이름을 입력하세요: ");
+                filename = scan.nextLine();
+                filename = filename.trim().replaceAll("\\s+", "_");
+                filename = "res/"+filename+".txt";
+                this.vocToFile(filename);
+            }
+            default -> System.out.println("입력이 잘못되었습니다.");
+        }
+    }
+
+    public void fileLoad() {
+        String filename;
+
+        System.out.print("불러올 파일의 이름을 입력하세요: ");
+        filename = scan.nextLine();
+        filename = "res/"+filename+".txt";
+
+        voc.clear();
+        this.makeVoc(filename);
+    }
+}

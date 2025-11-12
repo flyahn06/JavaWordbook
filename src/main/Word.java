@@ -10,6 +10,10 @@ public class Word {
         this.kor = kor;
     }
 
+    public String getEng() { return eng; }
+
+    public String getKor() { return kor; }
+
     public void setEng(String eng) {
         this.eng = eng;
     }
