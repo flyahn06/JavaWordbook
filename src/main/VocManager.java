@@ -20,7 +20,7 @@ public class VocManager {
         this.voc.add(new Word(eng, kor));
     }
 
-    void makeVoc(String fileName) {
+    boolean makeVoc(String fileName) {
         try (Scanner file = new Scanner(new File(fileName))) {
             String line;
             String[] lineSplit;
@@ -32,11 +32,13 @@ public class VocManager {
             }
 
             System.out.printf("%s님의 단어장 생성완료\n", this.userName);
-            this.menu();
 
         } catch (FileNotFoundException e) {
             System.out.println("파일을 찾을 수 없습니다.");
+            return false;
         }
+
+        return true;
     }
 
     void menu() {
