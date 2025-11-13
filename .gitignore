@@ -31,3 +31,6 @@ bin/
 
 # IntelliJ
 .idea
+
+# API key
+.key
