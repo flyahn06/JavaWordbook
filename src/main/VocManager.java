@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -40,18 +41,38 @@ public class VocManager {
 
         return true;
     }
+    
+    void printMenu() {
+        System.out.println("\n------" + userName + "의 단어장 -------");
+        System.out.println("1) 단어검색");
+        System.out.println("2) 단어검색2");
+        System.out.println("3) 단어수정");
+        System.out.println("4) 단어삭제");
+        System.out.println("5) 전체단어출력");
+        System.out.println("6) 파일 저장하기");
+        System.out.println("7) 파일 불러오기");
+        System.out.println("0) 메뉴 출력");
+        System.out.println("99) 종료");
+        System.out.println("-".repeat(20));
+        System.out.println();
+    }
 
     void menu() {
         int choice = 0;
         boolean running = true;
 
+        this.printMenu();
+
         while (running) {
-            System.out.println("\n------" + userName + "의 단어장 -------");
-            System.out.println("1) 단어검색 2) 단어검색2 3) 단어수정 4) 단어삭제 5) 전체단어출력 6) 파일 저장하기 7) 파일 불러오기 0) 종료");
-            System.out.print("메뉴를 선택하세요 : ");
-            choice = scan.nextInt();
+            System.out.print("메뉴를 선택하세요: ");
+            try {
+                choice = scan.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("올바른 번호를 입력하세요!");
+                scan.next();
+                continue;
+            }
             scan.nextLine();
-            System.out.println();
 
             switch (choice) {
                 case 1 -> searchVoc();
@@ -61,10 +82,12 @@ public class VocManager {
                 case 5 -> printAllWords();
                 case 6 -> fileSave();
                 case 7 -> fileLoad();
-                case 0 -> {
+                case 0 -> printMenu();
+                case 99 -> {
                     System.out.println(userName + "의 단어장 프로그램을 종료합니다.");
                     running = false;
                 }
+                default -> System.out.println("올바른 번호를 입력하세요!");
             }
         }
     }
@@ -106,6 +129,8 @@ public class VocManager {
 
     public void editWord() {
         Word targetWord;
+        String temp;
+        int option;
 
         System.out.print("수정할 영단어를 입력하세요: ");
         targetWord = this.searchVoc(scan.nextLine().trim());
@@ -117,17 +142,38 @@ public class VocManager {
 
         System.out.println("1) 영단어수정 2) 한글뜻수정");
         System.out.print("메뉴를 입력하세요: ");
+        try {
+            option = scan.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("올바른 번호를 입력하세요!");
+            return;
+        }
 
-        switch (scan.nextInt()) {
+        scan.nextLine();
+
+        switch (option) {
             case 1 -> {
                 System.out.print("새로운 단어를 입력하세요: ");
-                scan.nextLine();
-                targetWord.setEng(scan.nextLine());
+                temp = scan.nextLine();
+
+                if (temp.isEmpty()) {
+                    System.out.println("단어가 변경되지 않았습니다.");
+                } else {
+                    targetWord.setEng(temp);
+                    System.out.println("단어가 잘 변경되었습니다.");
+                }
+
             }
             case 2 -> {
                 System.out.print("새로운 뜻을 입력하세요: ");
-                scan.nextLine();
-                targetWord.setKor(scan.nextLine());
+                temp = scan.nextLine();
+
+                if (temp.isEmpty()) {
+                    System.out.println("단어가 변경되지 않았습니다.");
+                } else {
+                    targetWord.setKor(temp);
+                    System.out.println("단어가 잘 변경되었습니다.");
+                }
             }
             default -> {
                 System.out.println("잘못된 옵션입니다.");
@@ -165,7 +211,6 @@ public class VocManager {
                 return s;
             }
         }
-
         return null;
     }
 
