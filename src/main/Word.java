@@ -1,30 +1,48 @@
 package main;
 
+import java.util.Objects;
+import java.util.Vector;
+
 public class Word {
     String eng;
-    String kor;
+    Vector<String> kor;
 
     public Word(String eng, String kor) {
         super();
         this.eng = eng;
-        this.kor = kor;
+        this.kor = new Vector<>();
+        this.setKor(kor);
     }
 
     public String getEng() { return eng; }
 
-    public String getKor() { return kor; }
+    public String getKor() {
+        String str = "";
+
+        if (this.kor.isEmpty()) return str;
+
+        for (int i = 0; i < this.kor.size() - 1; i++) {
+            str += this.kor.get(i) + ", ";
+        }
+
+        str += this.kor.getLast();
+
+        return str;
+    }
 
     public void setEng(String eng) {
         this.eng = eng;
     }
 
     public void setKor(String kor) {
-        this.kor = kor;
+        for (String k: kor.split(",")) {
+            this.kor.add(k.trim());
+        }
     }
 
     @Override
     public String toString() {
-        return eng + " : " + kor;
+        return this.getEng() + " : " + this.getKor();
     }
 
     @Override
@@ -35,5 +53,10 @@ public class Word {
             return word.eng.equals(this.eng);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(eng, kor);
     }
 }
