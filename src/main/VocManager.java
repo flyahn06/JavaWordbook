@@ -3,22 +3,24 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Vector;
 
 public class VocManager {
     static Scanner scan = new Scanner(System.in);
-    Vector<Word> voc = new Vector<>();
+    HashMap<String, Word> voc;
     String userName;
     int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
 
     VocManager(String userName) {
         this.userName = userName;
+        this.voc = new HashMap<>();
     }
 
     void addWord(String eng, String kor) {
-        this.voc.add(new Word(eng, kor));
+        this.voc.put(eng, new Word(eng, kor));
     }
 
     boolean makeVoc(String fileName) {
@@ -92,11 +94,11 @@ public class VocManager {
         }
     }
 
-    public void WAnotes(Vector<Word> wrongAnswers) { //여기서 전해지는 파라미터는 오답들만 모아놓은 벡터
+    public void WAnotes(Vector<Word> wrongAnswers) { // 여기서 전해지는 파라미터는 오답들만 모아놓은 벡터
         String filename = "오답노트" + i + ".txt";
         try (PrintWriter outfile = new PrintWriter(filename)) {
             for(Word j : wrongAnswers) {
-                String str = j.eng + "\t" + j.kor;
+                String str = j.getEng() + "\t" + j.getKor();
                 outfile.println(str);
             }
             System.out.println("오답노트가 만들어졌습니다.");
@@ -107,33 +109,36 @@ public class VocManager {
     }
 
     public void printAllWords() {
-        for (Word word: this.voc) {
+        for (Word word: this.voc.values()) {
             System.out.println(word);
         }
     }
 
     public void deleteWord() {
         Word targetWord;
+        String eng;
 
         System.out.print("삭제할 영단어를 입력하세요: ");
-        targetWord = this.searchVoc(scan.nextLine().trim());
+        eng = scan.nextLine().trim();
+        targetWord = this.voc.get(eng);
 
         if (targetWord == null) {
             System.out.println("단어를 찾을 수 없습니다.");
             return;
         }
 
-
-        System.out.println(this.voc.remove(targetWord));
+        System.out.println(this.voc.remove(eng, targetWord));
     }
 
     public void editWord() {
         Word targetWord;
         String temp;
+        String eng;
         int option;
 
         System.out.print("수정할 영단어를 입력하세요: ");
-        targetWord = this.searchVoc(scan.nextLine().trim());
+        eng = scan.nextLine().trim();
+        targetWord = this.voc.get(eng);
 
         if (targetWord == null) {
             System.out.println("단어를 찾을 수 없습니다.");
@@ -159,10 +164,11 @@ public class VocManager {
                 if (temp.isEmpty()) {
                     System.out.println("단어가 변경되지 않았습니다.");
                 } else {
+                    this.voc.remove(targetWord.getEng(), targetWord);
                     targetWord.setEng(temp);
+                    this.voc.put(temp, targetWord);
                     System.out.println("단어가 잘 변경되었습니다.");
                 }
-
             }
             case 2 -> {
                 System.out.print("새로운 뜻을 입력하세요: ");
@@ -186,8 +192,8 @@ public class VocManager {
         System.out.print("검색할 부분 단어를 입력하세요 (영단어) : ");
         String sWord = scan.nextLine();
 
-        for (Word word: this.voc) {
-            if (word.eng.indexOf(sWord) == 0) {
+        for (Word word: this.voc.values()) {
+            if (word.getEng().indexOf(sWord) == 0) {
                 System.out.println(word);
             }
         }
@@ -197,25 +203,15 @@ public class VocManager {
         System.out.println("------ 단어 검색 ------");
         System.out.print("검색할 단어를 입력하세요 (영단어) : ");
         String sWord = scan.nextLine();
+        Word targetWord = this.voc.get(sWord);
 
-        for (Word s: this.voc) {
-            if (s.eng.equals(sWord)) {
-                System.out.println("단어의 뜻: " + s.kor);
-            }
+        if (targetWord != null) {
+            System.out.println("단어의 뜻: " + targetWord.getKor());
         }
-    }
-
-    public Word searchVoc(String target) {
-        for (Word s: this.voc) {
-            if (s.eng.equals(target)) {
-                return s;
-            }
-        }
-        return null;
     }
 
     public void fileWriter(PrintWriter outfile) {
-        for (Word w : this.voc) {
+        for (Word w : this.voc.values()) {
             outfile.println(w.getEng() + "\t" + w.getKor());
         }
     }
