@@ -11,16 +11,19 @@ import java.util.Vector;
 public class VocManager {
     static Scanner scan = new Scanner(System.in);
     HashMap<String, Word> voc;
+    Vector<String> orderedEnglish;
     String userName;
     int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
 
     VocManager(String userName) {
         this.userName = userName;
         this.voc = new HashMap<>();
+        this.orderedEnglish = new Vector<>();
     }
 
     void addWord(String eng, String kor) {
         this.voc.put(eng, new Word(eng, kor));
+        this.orderedEnglish.add(eng);
     }
 
     boolean makeVoc(String fileName) {
@@ -109,8 +112,8 @@ public class VocManager {
     }
 
     public void printAllWords() {
-        for (Word word: this.voc.values()) {
-            System.out.println(word);
+        for (String w: this.orderedEnglish) {
+            System.out.println(this.voc.get(w));
         }
     }
 
@@ -127,7 +130,8 @@ public class VocManager {
             return;
         }
 
-        System.out.println(this.voc.remove(eng, targetWord));
+        this.voc.remove(eng, targetWord);
+        this.orderedEnglish.remove(eng);
     }
 
     public void editWord() {
@@ -135,6 +139,7 @@ public class VocManager {
         String temp;
         String eng;
         int option;
+        int originalIndex;
 
         System.out.print("수정할 영단어를 입력하세요: ");
         eng = scan.nextLine().trim();
@@ -156,6 +161,7 @@ public class VocManager {
 
         scan.nextLine();
 
+        // 여기서부터 변경하고자 하는 단어가 존재함이 보장됨
         switch (option) {
             case 1 -> {
                 System.out.print("새로운 단어를 입력하세요: ");
@@ -164,9 +170,13 @@ public class VocManager {
                 if (temp.isEmpty()) {
                     System.out.println("단어가 변경되지 않았습니다.");
                 } else {
+                    originalIndex = this.orderedEnglish.indexOf(targetWord.getEng());
                     this.voc.remove(targetWord.getEng(), targetWord);
+                    this.orderedEnglish.remove(originalIndex);
+
                     targetWord.setEng(temp);
                     this.voc.put(temp, targetWord);
+                    this.orderedEnglish.insertElementAt(temp, originalIndex);
                     System.out.println("단어가 잘 변경되었습니다.");
                 }
             }
@@ -211,8 +221,8 @@ public class VocManager {
     }
 
     public void fileWriter(PrintWriter outfile) {
-        for (Word w : this.voc.values()) {
-            outfile.println(w.getEng() + "\t" + w.getKor());
+        for (String w: this.orderedEnglish) {
+            outfile.println(this.voc.get(w).getEng() + "\t" + this.voc.get(w).getKor());
         }
     }
 
