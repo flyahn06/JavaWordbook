@@ -233,12 +233,17 @@ public class VocManager {
         int choice = 0;
         String filename;
 
-        System.out.println("1) 파일 덮어쓰기 2) 새로운 파일로 저장하기");
-        System.out.print("선택하세요: ");
-        choice = scan.nextInt();
-        scan.nextLine();
-        System.out.println();
+        try {
+            System.out.println("1) 파일 덮어쓰기 2) 새로운 파일로 저장하기");
+            System.out.print("선택하세요: ");
+            choice = scan.nextInt();
+            scan.nextLine();
 
+        } catch (InputMismatchException e) {
+            scan.nextLine();
+        }
+
+        System.out.println();
         switch (choice) {
             case 1 -> this.vocToFile("res/words.txt");
             case 2-> {
@@ -251,7 +256,7 @@ public class VocManager {
 
                 this.vocToFile(filename);
             }
-            default -> System.out.println("입력이 잘못되었습니다.");
+            default -> System.out.println("입력이 잘못되어 메뉴로 돌아갑니다.");
         }
     }
 
