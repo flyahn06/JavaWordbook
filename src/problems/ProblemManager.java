@@ -34,9 +34,12 @@ public class ProblemManager {
 
         Vector<String> engList = this.vm.getOrderedEnglish();
         Collections.shuffle(engList);
+        problems = new String[problemCount];
         for (int i=0; i<problemCount; i++) {
             problems[i] = engList.get(i);
         }
+
+        scan.nextLine();
 
         switch (problemType) {
             case 1 -> {
@@ -62,7 +65,7 @@ public class ProblemManager {
                     SubjectiveProblem subjectiveProblem = new SubjectiveProblem(i+1,problems[i], vm, rand.nextInt(2)+1);
                     if (subjectiveProblem.subjectiveType == 1) subjectiveProblem.showProblem1();
                     else subjectiveProblem.showProblem2();
-                    System.out.println("> ");
+                    System.out.print("> ");
                     if (subjectiveProblem.isCorrect(scan.nextLine())) {
                         System.out.println("정답입니다.");
                         rightCount++;
@@ -78,5 +81,7 @@ public class ProblemManager {
                 }
             }
         }
+
+        vm.vocToFile(vm.getFileName());
     }
 }

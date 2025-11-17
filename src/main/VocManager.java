@@ -13,6 +13,7 @@ public class VocManager {
     Vector<String> orderedEnglish;
     String userName;
     int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
+    String fileName;
 
     VocManager(String userName) {
         this.userName = userName;
@@ -25,7 +26,7 @@ public class VocManager {
     }
 
     public Vector<String> getOrderedEnglish() {
-        return orderedEnglish;
+        return new Vector<String>(this.orderedEnglish);
     }
 
     void addWord(String eng, String kor, String ranking) {
@@ -34,6 +35,7 @@ public class VocManager {
     }
 
     boolean makeVoc(String fileName) {
+        this.fileName = fileName;
         try (Scanner file = new Scanner(new File(fileName))) {
             String line;
             String[] lineSplit;
@@ -52,6 +54,10 @@ public class VocManager {
         }
 
         return true;
+    }
+
+    public String getFileName() {
+        return this.fileName;
     }
 
     void printMenu() {
@@ -236,7 +242,8 @@ public class VocManager {
 
     public void fileWriter(PrintWriter outfile) {
         for (String w : this.orderedEnglish) {
-            outfile.println(this.voc.get(w).getEng() + "\t" + this.voc.get(w).getKor());
+            Word word = this.voc.get(w);
+            outfile.println(word.getEng() + "\t" + word.getKor() + "\t" + word.getRanking());
         }
     }
 
@@ -294,7 +301,6 @@ public class VocManager {
 
     public void rank(String problem) {
         voc.get(problem).setRanking(voc.get(problem).getRanking() + 1);
-        this.vocToFile("res/words.txt");
     }
 }
 
