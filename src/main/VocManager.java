@@ -21,8 +21,16 @@ public class VocManager {
         this.orderedEnglish = new Vector<>();
     }
 
-    void addWord(String eng, String kor) {
-        this.voc.put(eng, new Word(eng, kor));
+    public HashMap<String, Word> getVoc() {
+        return voc;
+    }
+
+    public Vector<String> getOrderedEnglish() {
+        return orderedEnglish;
+    }
+
+    void addWord(String eng, String kor, String ranking) {
+        this.voc.put(eng, new Word(eng, kor, ranking));
         this.orderedEnglish.add(eng);
     }
 
@@ -34,7 +42,7 @@ public class VocManager {
             while (file.hasNextLine()) {
                 line = file.nextLine();
                 lineSplit = line.split("\t");
-                this.addWord(lineSplit[0].trim(), lineSplit[1].trim());
+                this.addWord(lineSplit[0].trim(), lineSplit[1].trim(), lineSplit[2].trim());
             }
 
             System.out.printf("%s님의 단어장 생성완료\n", this.userName);
@@ -46,7 +54,7 @@ public class VocManager {
 
         return true;
     }
-    
+
     void printMenu() {
         System.out.println("\n------" + userName + "의 단어장 -------");
         System.out.println("1) 단어검색");
@@ -100,7 +108,7 @@ public class VocManager {
     public void WAnotes(Vector<Word> wrongAnswers) { // 여기서 전해지는 파라미터는 오답들만 모아놓은 벡터
         String filename = "오답노트" + i + ".txt";
         try (PrintWriter outfile = new PrintWriter(filename)) {
-            for(Word j : wrongAnswers) {
+            for (Word j : wrongAnswers) {
                 String str = j.getEng() + "\t" + j.getKor();
                 outfile.println(str);
             }
@@ -112,7 +120,7 @@ public class VocManager {
     }
 
     public void printAllWords() {
-        for (String w: this.orderedEnglish) {
+        for (String w : this.orderedEnglish) {
             System.out.println(this.voc.get(w));
         }
     }
@@ -202,7 +210,7 @@ public class VocManager {
         System.out.print("검색할 부분 단어를 입력하세요 (영단어) : ");
         String sWord = scan.nextLine();
 
-        for (Word word: this.voc.values()) {
+        for (Word word : this.voc.values()) {
             if (word.getEng().indexOf(sWord) == 0) {
                 System.out.println(word);
             }
@@ -221,7 +229,7 @@ public class VocManager {
     }
 
     public void fileWriter(PrintWriter outfile) {
-        for (String w: this.orderedEnglish) {
+        for (String w : this.orderedEnglish) {
             outfile.println(this.voc.get(w).getEng() + "\t" + this.voc.get(w).getKor());
         }
     }
@@ -235,7 +243,7 @@ public class VocManager {
         }
     }
 
-    public void fileSave(){
+    public void fileSave() {
         int choice = 0;
         String filename;
 
@@ -252,28 +260,35 @@ public class VocManager {
         System.out.println();
         switch (choice) {
             case 1 -> this.vocToFile("res/words.txt");
-            case 2-> {
+            case 2 -> {
                 System.out.print("새 파일의 이름을 입력하세요: ");
                 filename = scan.nextLine();
                 filename = filename.trim().replaceAll("\\s+", "_");
 
                 if (!(filename.indexOf(".txt") == filename.length() - 4))
-                    filename = "res/"+filename+".txt";
+                    filename = "res/" + filename + ".txt";
 
                 this.vocToFile(filename);
             }
             default -> System.out.println("입력이 잘못되어 메뉴로 돌아갑니다.");
         }
     }
+    //out.close();
 
     public void fileLoad() {
         String filename;
 
         System.out.print("불러올 파일의 이름을 입력하세요: ");
         filename = scan.nextLine();
-        filename = "res/"+filename+".txt";
+        filename = "res/" + filename + ".txt";
 
         voc.clear();
         this.makeVoc(filename);
     }
+
+    public void rank(String problem) {
+        voc.get(problem).setRanking(voc.get(problem).getRanking() + 1);
+        this.vocToFile("res/words.txt");
+    }
 }
+

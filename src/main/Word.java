@@ -6,11 +6,13 @@ import java.util.Vector;
 public class Word {
     String eng;
     Vector<String> kor;
+    int ranking;
 
-    public Word(String eng, String kor) {
+    public Word(String eng, String kor, String  ranking) {
         super();
         this.eng = eng;
         this.kor = new Vector<>();
+        this.ranking = Integer.parseInt(ranking);
         this.setKor(kor);
     }
 
@@ -30,6 +32,8 @@ public class Word {
         return str;
     }
 
+    public int getRanking() { return ranking; }
+
     public void setEng(String eng) {
         this.eng = eng;
     }
@@ -39,6 +43,8 @@ public class Word {
             this.kor.add(k.trim());
         }
     }
+
+    public void setRanking(int ranking) { this.ranking = ranking; }
 
     @Override
     public String toString() {
