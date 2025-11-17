@@ -1,5 +1,7 @@
 package main;
 
+import problems.ProblemManager;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -61,10 +63,16 @@ public class VocManager {
         System.out.println("5) 전체단어출력");
         System.out.println("6) 파일 저장하기");
         System.out.println("7) 파일 불러오기");
+        System.out.println("8) 퀴즈 풀기");
         System.out.println("0) 메뉴 출력");
         System.out.println("99) 종료");
         System.out.println("-".repeat(20));
         System.out.println();
+    }
+
+    void problem() {
+        ProblemManager pm = new ProblemManager(this);
+        pm.generateProblems();
     }
 
     void menu() {
@@ -92,6 +100,7 @@ public class VocManager {
                 case 5 -> printAllWords();
                 case 6 -> fileSave();
                 case 7 -> fileLoad();
+                case 8 -> problem();
                 case 0 -> printMenu();
                 case 99 -> {
                     System.out.println(userName + "의 단어장 프로그램을 종료합니다.");

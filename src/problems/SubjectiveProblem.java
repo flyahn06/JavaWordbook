@@ -15,7 +15,7 @@ public class SubjectiveProblem extends Problem{
         if (subjectiveType == 1) {
             String[] inputArray = input.split(",\\s*");
             for (String s : inputArray) {
-                result = this.vm.getVoc().get(problem).kor.contains(s.trim());
+                result = this.vm.getVoc().get(problem).getKor().contains(s.trim());
                 if (!result) return false;
             }
             return true;
