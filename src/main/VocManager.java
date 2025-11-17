@@ -139,6 +139,15 @@ public class VocManager {
         }
     }
 
+    public void wrongAnswers(ProblemManager PM) {
+        int choice = scan.nextInt();
+        System.out.print("문제오답노트를 만들기를 원하면 1을 입력하시오.  ");
+        if(choice == 1) {
+            WAnotes2(PM.wrongproblems);
+        }
+        WAnotes(PM.wrongWords);
+    }
+
     //틀린 단어들의 벡터를 전달하면 그 단어들을 오답노트i.txt에 저장하는 메서드
     public void WAnotes(Vector<Word> wrongAnswers) { // 여기서 전해지는 파라미터는 오답들만 모아놓은 벡터
         String filename = "오답노트" + i + ".txt";
@@ -155,10 +164,15 @@ public class VocManager {
     }
 
     //틀린 문제들을 인자로 전달하면 그 문제들을 문제오답노트i.txt에 저장하는 메서드
-    public void WAnotes2() {
+    public void WAnotes2(Vector<String> wp) {
         String filename = "문제오답노트" + i + ".txt";
         try (PrintWriter outfile = new PrintWriter(filename)) {
-            for
+            for (String str : wp) {
+                outfile.println(str);
+            }
+            System.out.printf("문제오답노트가 만들어졌습니다");
+        } catch (FileNotFoundException e) {
+            System.out.printf("오류");
         }
     }
 

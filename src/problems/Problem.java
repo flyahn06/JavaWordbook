@@ -19,5 +19,9 @@ public abstract class Problem {
 
     public abstract void showProblem1(); // eng to kor
 
+    public abstract String getProblem1();
+
     public abstract void showProblem2(); // kor to eng
+
+    public abstract String getProblem2();
 }

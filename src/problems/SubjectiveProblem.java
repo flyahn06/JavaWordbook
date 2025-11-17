@@ -32,8 +32,21 @@ public class SubjectiveProblem extends Problem{
     }
 
     @Override
+    public String getProblem1() {
+        String str = problemNumber + ". 다음 단어의 뜻을 쓰시오.";
+        str += "\n" + "[ " + problem + " ]";
+        return str;
+    }
+
+    @Override
     public void showProblem2() {
         System.out.println(problemNumber + ". 다음 뜻을 가진 단어를 쓰시오.");
         System.out.println("[ " + this.vm.getVoc().get(problem).getKor() + " ]");
+    }
+
+    public String getProblem2() {
+        String str = problemNumber + ". 다음 뜻을 가진 단어를 쓰시오.";
+        str += "\n" + "[ " + this.vm.getVoc().get(problem).getKor() + " ]";
+        return str;
     }
 }
