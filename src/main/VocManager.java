@@ -3,10 +3,7 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.*;
 
 public class VocManager {
     static Scanner scan = new Scanner(System.in);
