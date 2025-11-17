@@ -388,8 +388,10 @@ public class VocManager {
         filename = scan.nextLine();
         filename = "res/" + filename + ".txt";
 
-        voc.clear();
-        this.makeVoc(filename);
+        if (this.makeVoc(filename)) {
+            this.fileName = fileName;
+            voc.clear();
+        }
     }
 
     public void rank(String problem) {
