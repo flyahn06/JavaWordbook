@@ -1,5 +1,6 @@
 package main;
 
+import api.Translator;
 import problems.ProblemManager;
 
 import java.io.File;
@@ -14,6 +15,7 @@ public class VocManager {
     String userName;
     int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
     String fileName;
+    Translator translator = new Translator();
 
     VocManager(String userName) {
         this.userName = userName;
@@ -30,7 +32,7 @@ public class VocManager {
     }
 
     void addWord(String eng, String kor, String ranking) {
-        this.voc.put(eng, new Word(eng, kor, ranking));
+        this.voc.put(eng, new Word(eng, kor, ranking, translator));
         this.orderedEnglish.add(eng);
     }
 
@@ -70,10 +72,29 @@ public class VocManager {
         System.out.println("6) 파일 저장하기");
         System.out.println("7) 파일 불러오기");
         System.out.println("8) 퀴즈 풀기");
+        System.out.println("9) 단어 추가");
         System.out.println("0) 메뉴 출력");
         System.out.println("99) 종료");
         System.out.println("-".repeat(20));
         System.out.println();
+    }
+
+    void addWordHelper() {
+        String eng, kor;
+
+        System.out.print("추가할 단어를 입력하세요: ");
+        eng = scan.nextLine().trim();
+
+        if (eng.isEmpty()) {
+            System.out.println("단어를 잘 입력하세요!");
+            return;
+        }
+
+        System.out.print("단어의 뜻을 입력하세요(빈칸이면 검색): ");
+        kor = scan.nextLine().trim();
+
+        this.addWord(eng, kor, "0");
+
     }
 
     void problem() {
@@ -107,6 +128,7 @@ public class VocManager {
                 case 6 -> fileSave();
                 case 7 -> fileLoad();
                 case 8 -> problem();
+                case 9 -> addWordHelper();
                 case 0 -> printMenu();
                 case 99 -> {
                     System.out.println(userName + "의 단어장 프로그램을 종료합니다.");
