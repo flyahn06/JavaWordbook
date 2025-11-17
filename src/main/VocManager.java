@@ -291,4 +291,3 @@ public class VocManager {
         this.vocToFile("res/words.txt");
     }
 }
-
