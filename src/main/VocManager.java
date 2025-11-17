@@ -11,7 +11,7 @@ public class VocManager {
     public HashMap<String, Word> voc;
     Vector<String> orderedEnglish;
     String userName;
-    int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
+    static int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
     String fileName;
     Translator translator = new Translator();
 
@@ -98,6 +98,8 @@ public class VocManager {
     void problem() {
         ProblemManager pm = new ProblemManager(this);
         pm.generateProblems();
+        writeCorrectRate(pm, i-1);
+        wrongAnswers(pm);
     }
 
     void menu() {
@@ -138,8 +140,8 @@ public class VocManager {
     }
 
     public void wrongAnswers(ProblemManager PM) {
-        int choice = scan.nextInt();
         System.out.print("문제오답노트를 만들기를 원하면 1을 입력하시오.  ");
+        int choice = scan.nextInt();
         if(choice == 1) {
             WAnotes2(PM.wrongProblems);
         }
@@ -168,19 +170,20 @@ public class VocManager {
             for (String str : wp) {
                 outfile.println(str);
             }
-            System.out.printf("문제오답노트가 만들어졌습니다");
+            System.out.println("문제오답노트가 만들어졌습니다");
         } catch (FileNotFoundException e) {
-            System.out.printf("오류");
+            System.out.println("오류");
         }
     }
 
-    //정답률 계산후 words.txt에 정답률 append하는 메서드
+    //정답률 계산후 scores.txt에 정답률 append하는 메서드
     public void writeCorrectRate(ProblemManager PM, int i) {
-        String contentToAppend = i + String.format("%.2f", PM.rightCount / PM.problemCount); //i, 정답률의 형태
+        double correctRate = (double) PM.rightCount / PM.problemCount;
+        String contentToAppend = i +", "+ String.format("%.2f", correctRate); //i, 정답률의 형태
         try (FileWriter fw = new FileWriter("res/scores.txt", true)) {
             fw.write("\n"+contentToAppend); //scores.txt에 contentToAppend를 append
         } catch (IOException e) {
-            System.out.printf("오류");
+            System.out.println("오류");
         }
     }
 
