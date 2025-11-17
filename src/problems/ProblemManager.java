@@ -8,10 +8,10 @@ import java.util.Scanner;
 import java.util.Vector;
 
 public class ProblemManager {
-    int problemCount;
+    public int problemCount;
     int problemType;
     String[] problems;
-    int rightCount;
+    public int rightCount;
     int wrongCount;
     VocManager vm;
 

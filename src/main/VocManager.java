@@ -139,15 +139,34 @@ public class VocManager {
         }
     }
 
+    //틀린 단어들의 벡터를 전달하면 그 단어들을 오답노트i.txt에 저장하는 메서드
     public void WAnotes(Vector<Word> wrongAnswers) { // 여기서 전해지는 파라미터는 오답들만 모아놓은 벡터
         String filename = "오답노트" + i + ".txt";
         try (PrintWriter outfile = new PrintWriter(filename)) {
             for (Word j : wrongAnswers) {
-                String str = j.getEng() + "\t" + j.getKor();
+                String str = j.getEng() + ", " + j.getKor();
                 outfile.println(str);
             }
             System.out.println("오답노트가 만들어졌습니다.");
             i++;
+        } catch (FileNotFoundException e) {
+            System.out.println("오류");
+        }
+    }
+
+    //틀린 문제들을 인자로 전달하면 그 문제들을 문제오답노트i.txt에 저장하는 메서드
+    public void WAnotes2() {
+        String filename = "문제오답노트" + i + ".txt";
+        try (PrintWriter outfile = new PrintWriter(filename)) {
+            for
+        }
+    }
+
+    //정답률 계산후 words.txt에 정답률 append하는 메서드
+    public void writeCorrectRate(ProblemManager PM, int i) {
+        String contentToAppend = i + Stringformat("%.2f", PM.rightCount/PM.problemCount); //i, 정답률의 형태
+        try (PrintWriter fw = new PrintWriter("res/scores.txt", true)) {
+            fw.write("\n"+contentToAppend); //scores.txt에 contentToAppend를 append
         } catch (FileNotFoundException e) {
             System.out.println("오류");
         }
