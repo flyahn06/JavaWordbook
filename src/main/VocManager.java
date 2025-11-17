@@ -13,7 +13,8 @@ public class VocManager {
     String userName;
     static int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
     String fileName;
-    Translator translator = new Translator();
+    static Translator translator = new Translator();
+    static final String isNumericRegex = "\\d+";
 
     VocManager(String userName) {
         this.userName = userName;
@@ -29,9 +30,11 @@ public class VocManager {
         return new Vector<String>(this.orderedEnglish);
     }
 
-    void addWord(String eng, String kor, String ranking) {
-        this.voc.put(eng, new Word(eng, kor, ranking, translator));
-        this.orderedEnglish.add(eng);
+    void addWord(String eng, String kor, int ranking) {
+        this.voc.put(eng, new Word(eng, kor, ranking));
+
+        if (!this.orderedEnglish.contains(eng))
+            this.orderedEnglish.add(eng);
     }
 
     boolean makeVoc(String fileName) {
@@ -43,7 +46,17 @@ public class VocManager {
             while (file.hasNextLine()) {
                 line = file.nextLine();
                 lineSplit = line.split("\t");
-                this.addWord(lineSplit[0].trim(), lineSplit[1].trim(), lineSplit[2].trim());
+
+                if (lineSplit.length < 3) {
+                    System.out.printf("파일 %s에 문제가 있습니다.\n\t행(%s)이 잘못된 형식입니다.\n", this.fileName, line);
+                    return false;
+                }
+
+                if (!lineSplit[2].matches(isNumericRegex)) {
+                    System.out.printf("파일 %s에 문제가 있습니다.\n\t행(%s)의 3번째 원소가 문자가 아닙니다.\n", this.fileName, line);
+                }
+
+                this.addWord(lineSplit[0].trim(), lineSplit[1].trim(), Integer.parseInt(lineSplit[2].trim()));
             }
 
             System.out.printf("%s님의 단어장 생성완료\n", this.userName);
@@ -61,19 +74,14 @@ public class VocManager {
     }
 
     void printMenu() {
-        System.out.println("\n------" + userName + "의 단어장 -------");
-        System.out.println("1) 단어검색");
-        System.out.println("2) 단어검색2");
-        System.out.println("3) 단어수정");
-        System.out.println("4) 단어삭제");
-        System.out.println("5) 전체단어출력");
-        System.out.println("6) 파일 저장하기");
-        System.out.println("7) 파일 불러오기");
-        System.out.println("8) 퀴즈 풀기");
-        System.out.println("9) 단어 추가");
-        System.out.println("0) 메뉴 출력");
-        System.out.println("99) 종료");
-        System.out.println("-".repeat(20));
+        String banner = String.format("-------- %s의 단어장 [ %s ] ---------", this.userName, this.fileName);
+        System.out.printf("\n%s\n", banner);
+        System.out.println("[검색] 1) 단어검색  2) 단어부분검색  3) 전체단어출력");
+        System.out.println("[수정] 4) 단어추가  5) 단어수정  6) 단어삭제");
+        System.out.println("[퀴즈] 7) 퀴즈 풀기");
+        System.out.println("[파일] 8) 파일 저장하기  9) 파일 불러오기");
+        System.out.println("[메뉴] 0) 메뉴 출력  99) 프로그램 종료");
+        System.out.println("-".repeat(banner.length() + 1));
         System.out.println();
     }
 
@@ -88,11 +96,28 @@ public class VocManager {
             return;
         }
 
+        if (this.orderedEnglish.contains(eng)) {
+            String option;
+            System.out.print("[주의] 단어장에 단어가 이미 존재합니다. 계속 진행하면 기존의 단어가 대체됩니다. 진행하시겠습니까? (Y/N) ");
+            option = scan.nextLine();
+
+            if (!option.toLowerCase().trim().equals("y"))
+                return;
+        }
+
         System.out.print("단어의 뜻을 입력하세요(빈칸이면 검색): ");
         kor = scan.nextLine().trim();
+        if (kor.equals("?") || kor.isEmpty()) {
+            kor = VocManager.translator.getMeaning(eng);
 
-        this.addWord(eng, kor, "0");
-
+            if (kor == null) {
+                System.out.println("단어의 뜻을 찾을 수 없습니다!");
+                return;
+            }
+            System.out.printf("검색된 단어의 뜻: %s\n", kor);
+        }
+        this.addWord(eng, kor, 0);
+        System.out.println("단어가 잘 추가되었습니다.");
     }
 
     void problem() {
@@ -109,7 +134,7 @@ public class VocManager {
         this.printMenu();
 
         while (running) {
-            System.out.print("메뉴를 선택하세요: ");
+            System.out.print("> ");
             try {
                 choice = scan.nextInt();
             } catch (InputMismatchException e) {
@@ -121,14 +146,14 @@ public class VocManager {
 
             switch (choice) {
                 case 1 -> searchVoc();
-                case 2 -> searchVoc2();
-                case 3 -> editWord();
-                case 4 -> deleteWord();
-                case 5 -> printAllWords();
-                case 6 -> fileSave();
-                case 7 -> fileLoad();
-                case 8 -> problem();
-                case 9 -> addWordHelper();
+                case 2 -> searchVocPartial();
+                case 3 -> printAllWords();
+                case 4 -> addWordHelper();
+                case 5 -> editWord();
+                case 6 -> deleteWord();
+                case 7 -> problem();
+                case 8 -> fileSave();
+                case 9 -> fileLoad();
                 case 0 -> printMenu();
                 case 99 -> {
                     System.out.println(userName + "의 단어장 프로그램을 종료합니다.");
@@ -226,8 +251,9 @@ public class VocManager {
             return;
         }
 
-        System.out.println("1) 영단어수정 2) 한글뜻수정");
-        System.out.print("메뉴를 입력하세요: ");
+        System.out.println("\n------- 단어 수정 -------");
+        System.out.println("1) 영단어수정  2) 한글뜻추가  3) 한글뜻수정");
+        System.out.printf("%s 수정> ", eng);
         try {
             option = scan.nextInt();
         } catch (InputMismatchException e) {
@@ -240,7 +266,7 @@ public class VocManager {
         // 여기서부터 변경하고자 하는 단어가 존재함이 보장됨
         switch (option) {
             case 1 -> {
-                System.out.print("새로운 단어를 입력하세요: ");
+                System.out.print("바뀔 단어를 입력하세요: ");
                 temp = scan.nextLine();
 
                 if (temp.isEmpty()) {
@@ -257,7 +283,18 @@ public class VocManager {
                 }
             }
             case 2 -> {
-                System.out.print("새로운 뜻을 입력하세요: ");
+                System.out.print("추가할 뜻을 입력하세요(,로 뜻 구분): ");
+                temp = scan.nextLine();
+
+                if (temp.isEmpty()) {
+                    System.out.println("단어가 변경되지 않았습니다.");
+                } else {
+                    targetWord.setKor(temp, false);
+                    System.out.println("단어가 잘 변경되었습니다.");
+                }
+            }
+            case 3 -> {
+                System.out.print("새로운 뜻을 입력하세요(,로 뜻 구분): ");
                 temp = scan.nextLine();
 
                 if (temp.isEmpty()) {
@@ -273,9 +310,8 @@ public class VocManager {
         }
     }
 
-    public void searchVoc2() {
-        System.out.println("------ 단어 검색 2 ------");
-        System.out.print("검색할 부분 단어를 입력하세요 (영단어) : ");
+    public void searchVocPartial() {
+        System.out.print("검색할 부분 단어를 입력하세요 (영단어): ");
         String sWord = scan.nextLine();
 
         for (Word word : this.voc.values()) {
@@ -286,13 +322,14 @@ public class VocManager {
     }
 
     public void searchVoc() {
-        System.out.println("------ 단어 검색 ------");
-        System.out.print("검색할 단어를 입력하세요 (영단어) : ");
+        System.out.print("검색할 단어를 입력하세요 (영단어): ");
         String sWord = scan.nextLine();
         Word targetWord = this.voc.get(sWord);
 
         if (targetWord != null) {
             System.out.println("단어의 뜻: " + targetWord.getKor());
+        } else {
+            System.out.println("찾는 단어가 단어장에 없습니다.");
         }
     }
 

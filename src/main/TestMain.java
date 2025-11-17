@@ -15,9 +15,9 @@ public class TestMain {
 
         VocManager manager = new VocManager(name);
 
-        if (manager.makeVoc(filePath))
+        if (manager.makeVoc(filePath)) {
             manager.menu();
-
-        manager.vocToFile(manager.getFileName());
+            manager.vocToFile(manager.getFileName());
+        }
     }
 }
