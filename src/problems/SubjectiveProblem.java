@@ -1,6 +1,6 @@
-package main;
+package problems;
 
-import java.util.Vector;
+import main.VocManager;
 
 public class SubjectiveProblem extends Problem{
     int subjectiveType;

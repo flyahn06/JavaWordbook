@@ -1,4 +1,6 @@
-package main;
+package problems;
+
+import main.VocManager;
 
 public abstract class Problem {
     int problemNumber;

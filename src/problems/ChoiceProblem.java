@@ -1,4 +1,6 @@
-package main;
+package problems;
+
+import main.VocManager;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,6 @@
-package main;
+package problems;
+
+import main.VocManager;
 
 import java.util.Collections;
 import java.util.Random;
@@ -65,7 +67,7 @@ public class ProblemManager {
                         System.out.println("정답입니다.");
                         rightCount++;
                     } else if (subjectiveProblem.subjectiveType==1) {
-                        System.out.println("오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).kor + "입니다.");
+                        System.out.println("오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).getKor() + "입니다.");
                         wrongCount++;
                         vm.rank(problems[i]);
                     } else {
