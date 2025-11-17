@@ -18,12 +18,6 @@ public class Translator {
         try (Scanner scan = new Scanner(new File(envPath))) {
             this.APIKEY = scan.nextLine().trim();
             this.url = new URL("https://api-free.deepl.com/v2/translate");
-            this.con = (HttpURLConnection) url.openConnection();
-
-            this.con.setRequestMethod("POST");
-            this.con.setRequestProperty("Content-Type", "application/json");
-            this.con.setRequestProperty("Authorization", "DeepL-Auth-Key " + this.APIKEY);
-            this.con.setDoOutput(true);
         } catch (FileNotFoundException e) {
             System.out.println("파일을 찾을 수 없습니다!");
             this.APIKEY = null;
@@ -51,7 +45,6 @@ public class Translator {
 
         try {
             this.con = (HttpURLConnection) url.openConnection();
-
             this.con.setRequestMethod("POST");
             this.con.setRequestProperty("Content-Type", "application/json");
             this.con.setRequestProperty("Authorization", "DeepL-Auth-Key " + this.APIKEY);
