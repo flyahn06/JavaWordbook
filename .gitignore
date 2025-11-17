@@ -26,6 +26,8 @@ bin/
 ### VS Code ###
 .vscode/
 
+# res
+res/
 ### Mac OS ###
 .DS_Store
 
