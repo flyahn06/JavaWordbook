@@ -1,12 +1,12 @@
 package main;
 
+import api.Translator;
+import problems.ProblemManager;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.*;
 
 public class VocManager {
     static Scanner scan = new Scanner(System.in);
@@ -14,6 +14,8 @@ public class VocManager {
     Vector<String> orderedEnglish;
     String userName;
     int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
+    String fileName;
+    Translator translator = new Translator();
 
     VocManager(String userName) {
         this.userName = userName;
@@ -26,15 +28,16 @@ public class VocManager {
     }
 
     public Vector<String> getOrderedEnglish() {
-        return orderedEnglish;
+        return new Vector<String>(this.orderedEnglish);
     }
 
     void addWord(String eng, String kor, String ranking) {
-        this.voc.put(eng, new Word(eng, kor, ranking));
+        this.voc.put(eng, new Word(eng, kor, ranking, translator));
         this.orderedEnglish.add(eng);
     }
 
     boolean makeVoc(String fileName) {
+        this.fileName = fileName;
         try (Scanner file = new Scanner(new File(fileName))) {
             String line;
             String[] lineSplit;
@@ -55,6 +58,10 @@ public class VocManager {
         return true;
     }
 
+    public String getFileName() {
+        return this.fileName;
+    }
+
     void printMenu() {
         System.out.println("\n------" + userName + "의 단어장 -------");
         System.out.println("1) 단어검색");
@@ -64,10 +71,35 @@ public class VocManager {
         System.out.println("5) 전체단어출력");
         System.out.println("6) 파일 저장하기");
         System.out.println("7) 파일 불러오기");
+        System.out.println("8) 퀴즈 풀기");
+        System.out.println("9) 단어 추가");
         System.out.println("0) 메뉴 출력");
         System.out.println("99) 종료");
         System.out.println("-".repeat(20));
         System.out.println();
+    }
+
+    void addWordHelper() {
+        String eng, kor;
+
+        System.out.print("추가할 단어를 입력하세요: ");
+        eng = scan.nextLine().trim();
+
+        if (eng.isEmpty()) {
+            System.out.println("단어를 잘 입력하세요!");
+            return;
+        }
+
+        System.out.print("단어의 뜻을 입력하세요(빈칸이면 검색): ");
+        kor = scan.nextLine().trim();
+
+        this.addWord(eng, kor, "0");
+
+    }
+
+    void problem() {
+        ProblemManager pm = new ProblemManager(this);
+        pm.generateProblems();
     }
 
     void menu() {
@@ -95,6 +127,8 @@ public class VocManager {
                 case 5 -> printAllWords();
                 case 6 -> fileSave();
                 case 7 -> fileLoad();
+                case 8 -> problem();
+                case 9 -> addWordHelper();
                 case 0 -> printMenu();
                 case 99 -> {
                     System.out.println(userName + "의 단어장 프로그램을 종료합니다.");
@@ -105,15 +139,48 @@ public class VocManager {
         }
     }
 
+    public void wrongAnswers(ProblemManager PM) {
+        int choice = scan.nextInt();
+        System.out.print("문제오답노트를 만들기를 원하면 1을 입력하시오.  ");
+        if(choice == 1) {
+            WAnotes2(PM.wrongproblems);
+        }
+        WAnotes(PM.wrongWords);
+    }
+
+    //틀린 단어들의 벡터를 전달하면 그 단어들을 오답노트i.txt에 저장하는 메서드
     public void WAnotes(Vector<Word> wrongAnswers) { // 여기서 전해지는 파라미터는 오답들만 모아놓은 벡터
         String filename = "오답노트" + i + ".txt";
         try (PrintWriter outfile = new PrintWriter(filename)) {
             for (Word j : wrongAnswers) {
-                String str = j.getEng() + "\t" + j.getKor();
+                String str = j.getEng() + ", " + j.getKor();
                 outfile.println(str);
             }
             System.out.println("오답노트가 만들어졌습니다.");
             i++;
+        } catch (FileNotFoundException e) {
+            System.out.println("오류");
+        }
+    }
+
+    //틀린 문제들을 인자로 전달하면 그 문제들을 문제오답노트i.txt에 저장하는 메서드
+    public void WAnotes2(Vector<String> wp) {
+        String filename = "문제오답노트" + i + ".txt";
+        try (PrintWriter outfile = new PrintWriter(filename)) {
+            for (String str : wp) {
+                outfile.println(str);
+            }
+            System.out.printf("문제오답노트가 만들어졌습니다");
+        } catch (FileNotFoundException e) {
+            System.out.printf("오류");
+        }
+    }
+
+    //정답률 계산후 words.txt에 정답률 append하는 메서드
+    public void writeCorrectRate(ProblemManager PM, int i) {
+        String contentToAppend = i + Stringformat("%.2f", PM.rightCount/PM.problemCount); //i, 정답률의 형태
+        try (PrintWriter fw = new PrintWriter("res/scores.txt", true)) {
+            fw.write("\n"+contentToAppend); //scores.txt에 contentToAppend를 append
         } catch (FileNotFoundException e) {
             System.out.println("오류");
         }
@@ -230,7 +297,8 @@ public class VocManager {
 
     public void fileWriter(PrintWriter outfile) {
         for (String w : this.orderedEnglish) {
-            outfile.println(this.voc.get(w).getEng() + "\t" + this.voc.get(w).getKor());
+            Word word = this.voc.get(w);
+            outfile.println(word.getEng() + "\t" + word.getKor() + "\t" + word.getRanking());
         }
     }
 
@@ -288,6 +356,5 @@ public class VocManager {
 
     public void rank(String problem) {
         voc.get(problem).setRanking(voc.get(problem).getRanking() + 1);
-        this.vocToFile("res/words.txt");
     }
 }

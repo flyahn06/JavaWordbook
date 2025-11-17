@@ -49,6 +49,17 @@ public class Translator {
     public String getMeaning(String engWord) {
         if (this.APIKEY == null) return null;
 
+        try {
+            this.con = (HttpURLConnection) url.openConnection();
+
+            this.con.setRequestMethod("POST");
+            this.con.setRequestProperty("Content-Type", "application/json");
+            this.con.setRequestProperty("Authorization", "DeepL-Auth-Key " + this.APIKEY);
+            this.con.setDoOutput(true);
+        } catch (IOException e) {
+            return null;
+        }
+
         String jsonInputString = "{\"text\": [\"";
         jsonInputString += engWord;
         jsonInputString +="\"],\"target_lang\": \"KO\", \"source_lang\": \"EN\"}";

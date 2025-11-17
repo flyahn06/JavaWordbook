@@ -1,4 +1,6 @@
-package main;
+package problems;
+
+import main.VocManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +46,16 @@ public class ChoiceProblem extends Problem {
     }
 
     @Override
+    public String getProblem1() {
+        String str = problemNumber + ". 다음 중 이 단어의 뜻을 고르시오.";
+        str += "\n" + "[ " + problem + " ]";
+        for (int i=0; i<4; i++) {
+            str += "\n" + (i+1) + ") " + this.vm.getVoc().get(wordList.get(i)).getKor();
+        }
+        return str;
+    }
+
+    @Override
     public void showProblem2() {
         System.out.println(problemNumber + ". 다음 중 이 뜻을 가진 단어를 고르시오.");
         System.out.println("[ " + this.vm.getVoc().get(problem).getKor() + " ]");
@@ -52,4 +64,12 @@ public class ChoiceProblem extends Problem {
         }
     }
 
+    public String getProblem2() {
+        String str = problemNumber + ". 다음 중 이 뜻을 가진 단어를 고르시오.";
+        str += "\n" + "[ " + this.vm.getVoc().get(problem).getKor() + " ]";
+        for (int i=0; i<4; i++) {
+            str += "\n" + (i+1) + ") " + wordList.get(i);
+        }
+        return str;
+    }
 }
