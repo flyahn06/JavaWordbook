@@ -48,12 +48,12 @@ public class Word {
             meaning.add(this.translator.getMeaning(this.getEng()));
             this.kor = meaning;
             System.out.println("검색된 단어 뜻: " + meaning.get(0));
+            return;
         }
         for (String k: kor.split(",")) {
             this.kor.add(k.trim());
         }
     }
-
 
 
     public void setRanking(int ranking) { this.ranking = ranking; }
