@@ -17,7 +17,8 @@ public class ChoiceProblem extends Problem {
         Vector<String> engList = this.vm.getOrderedEnglish();
         Collections.shuffle(engList);
         for (int i=0; i<3; i++) {
-            wrongWordList.add(engList.get(i));
+            if (!problem.equals(engList.get(i))) wrongWordList.add(engList.get(i));
+            else i--;
         }
         wordList.add(problem);
         wordList.addAll(wrongWordList);
