@@ -3,14 +3,12 @@ package main;
 import api.Translator;
 import problems.ProblemManager;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 public class VocManager {
     static Scanner scan = new Scanner(System.in);
-    HashMap<String, Word> voc;
+    public HashMap<String, Word> voc;
     Vector<String> orderedEnglish;
     String userName;
     int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
@@ -143,7 +141,7 @@ public class VocManager {
         int choice = scan.nextInt();
         System.out.print("문제오답노트를 만들기를 원하면 1을 입력하시오.  ");
         if(choice == 1) {
-            WAnotes2(PM.wrongproblems);
+            WAnotes2(PM.wrongProblems);
         }
         WAnotes(PM.wrongWords);
     }
@@ -178,11 +176,11 @@ public class VocManager {
 
     //정답률 계산후 words.txt에 정답률 append하는 메서드
     public void writeCorrectRate(ProblemManager PM, int i) {
-        String contentToAppend = i + Stringformat("%.2f", PM.rightCount/PM.problemCount); //i, 정답률의 형태
-        try (PrintWriter fw = new PrintWriter("res/scores.txt", true)) {
+        String contentToAppend = i + String.format("%.2f", PM.rightCount / PM.problemCount); //i, 정답률의 형태
+        try (FileWriter fw = new FileWriter("res/scores.txt", true)) {
             fw.write("\n"+contentToAppend); //scores.txt에 contentToAppend를 append
-        } catch (FileNotFoundException e) {
-            System.out.println("오류");
+        } catch (IOException e) {
+            System.out.printf("오류");
         }
     }
 
