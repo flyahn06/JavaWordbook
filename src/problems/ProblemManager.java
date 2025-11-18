@@ -39,6 +39,13 @@ public class ProblemManager {
 
         Vector<String> engList = this.vm.getOrderedEnglish();
         Collections.shuffle(engList);
+
+        while(engList.size() < problemCount) {
+            Vector<String> engListTemp = this.vm.getOrderedEnglish();
+            Collections.shuffle(engListTemp);
+            engList.addAll(engListTemp);
+        }
+
         problems = new String[problemCount];
         for (int i=0; i<problemCount; i++) {
             problems[i] = engList.get(i);
