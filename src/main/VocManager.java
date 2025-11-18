@@ -38,6 +38,7 @@ public class VocManager {
     }
 
     boolean makeVoc(String fileName) {
+        int rank;
         this.fileName = fileName;
         try (Scanner file = new Scanner(new File(fileName))) {
             String line;
@@ -52,11 +53,14 @@ public class VocManager {
                     System.out.printf("파일 %s에 문제가 있습니다.\n\t행(%s)이 잘못된 형식입니다.\n", this.fileName, line);
                 }
 
-                if (!lineSplit[2].matches(isNumericRegex)) {
+                try {
+                    rank = Integer.parseInt(lineSplit[2].trim());
+                } catch (NumberFormatException e) {
                     System.out.printf("파일 %s에 문제가 있습니다.\n\t행(%s)의 3번째 원소가 문자가 아닙니다.\n", this.fileName, line);
+                    rank = 0;
                 }
 
-                this.addWord(lineSplit[0].trim(), lineSplit[1].trim(), Integer.parseInt(lineSplit[2].trim()));
+                this.addWord(lineSplit[0].trim(), lineSplit[1].trim(), rank);
             }
 
             System.out.printf("%s님의 단어장 생성완료\n", this.userName);
@@ -176,9 +180,10 @@ public class VocManager {
     //틀린 단어들의 벡터를 전달하면 그 단어들을 오답노트i.txt에 저장하는 메서드
     public void WAnotes(Vector<Word> wrongAnswers) { // 여기서 전해지는 파라미터는 오답들만 모아놓은 벡터
         String filename = "오답노트" + i + ".txt";
+        filename = "res/" + filename;
         try (PrintWriter outfile = new PrintWriter(filename)) {
             for (Word j : wrongAnswers) {
-                String str = j.getEng() + "\t" + j.getKor();
+                String str = j.getEng() + "\t" + j.getKor() + "\t" + j.getRanking();
                 outfile.println(str);
             }
             System.out.println("오답노트가 만들어졌습니다.");
@@ -191,6 +196,7 @@ public class VocManager {
     // 틀린 문제들을 인자로 전달하면 그 문제들을 문제오답노트i.txt에 저장하는 메서드
     public void WAnotes2(Vector<String> wp) {
         String filename = "문제오답노트" + i + ".txt";
+        filename = "res/" + filename;
         try (PrintWriter outfile = new PrintWriter(filename)) {
             for (String str : wp) {
                 outfile.println(str);
@@ -365,28 +371,34 @@ public class VocManager {
 
         System.out.println();
         switch (choice) {
-            case 1 -> this.vocToFile("res/words.txt");
+            case 1 -> this.vocToFile(this.fileName);
             case 2 -> {
                 System.out.print("새 파일의 이름을 입력하세요: ");
                 filename = scan.nextLine();
                 filename = filename.trim().replaceAll("\\s+", "_");
 
                 if (!(filename.indexOf(".txt") == filename.length() - 4))
-                    filename = "res/" + filename + ".txt";
+                    filename = filename + ".txt";
 
+                filename = "res/" + filename;
                 this.vocToFile(filename);
             }
             default -> System.out.println("입력이 잘못되어 메뉴로 돌아갑니다.");
         }
     }
-    //out.close();
 
     public void fileLoad() {
-        String filename;
+        String filename, option;
+
+        System.out.printf("%s의 변경사항을 저장하시겠습니까? ([Y]/N) ", this.fileName);
+        option = scan.nextLine().toLowerCase().trim();
+
+        if (option.isEmpty() || option.equals("y"))
+            this.vocToFile(this.fileName);
 
         System.out.print("불러올 파일의 이름을 입력하세요: ");
         filename = scan.nextLine();
-        filename = "res/" + filename + ".txt";
+        filename = "res/" + filename;
 
         this.makeVoc(filename);
     }
