@@ -28,6 +28,7 @@ public class ProblemManager {
     public void generateProblems() {
         Scanner scan = new Scanner(System.in);
         Random rand = new Random();
+        String userAnswer;
 
         System.out.println("1) 객관식 2) 주관식");
         System.out.print("> ");
@@ -60,13 +61,14 @@ public class ProblemManager {
                         System.out.println(temp);
                     }
                     System.out.print("> ");
-                    if (choiceProblem.isCorrect(scan.nextLine())) {
+                    userAnswer = scan.nextLine();
+                    if (choiceProblem.isCorrect(userAnswer)) {
                         System.out.println("정답입니다.");
                         rightCount++;
                     }
                     else {
                         System.out.println("오답입니다. 정답은 "+choiceProblem.answerNumber+"번입니다.");
-                        temp += ("\n" + "오답입니다. 정답은 "+choiceProblem.answerNumber+"번입니다." + "\n");
+                        temp += ("\n" + "오답입니다. 정답은 "+choiceProblem.answerNumber+"번입니다. (내 답: " + userAnswer + ")\n");
                         wrongCount++;
                         vm.rank(problems[i]);
                         wrongProblems.add(temp);
@@ -89,19 +91,20 @@ public class ProblemManager {
                         System.out.println(temp);
                     }
                     System.out.print("> ");
-                    if (subjectiveProblem.isCorrect(scan.nextLine())) {
+                    userAnswer = scan.nextLine();
+                    if (subjectiveProblem.isCorrect(userAnswer)) {
                         System.out.println("정답입니다.");
                         rightCount++;
                     } else if (subjectiveProblem.subjectiveType==1) {
                         System.out.println("오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).getKor() + "입니다.");
-                        temp += "\n" + "오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).getKor() + "입니다.";
+                        temp += "\n" + "오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).getKor() + "입니다. (내 답: " + userAnswer + ")\n";
                         wrongCount++;
                         vm.rank(problems[i]);
                         wrongProblems.add(temp);
                         wrongWords.add(vm.voc.get(problems[i]));
                     } else {
                         System.out.println("오답입니다. 정답은 " + problems[i]+"입니다.");
-                        temp += "\n" + "오답입니다. 정답은 " + problems[i]+"입니다.";
+                        temp += "\n" + "오답입니다. 정답은 " + problems[i]+"입니다. (내 답: " + userAnswer + ")\n";
                         wrongCount++;
                         vm.rank(problems[i]);
                         wrongProblems.add(temp);

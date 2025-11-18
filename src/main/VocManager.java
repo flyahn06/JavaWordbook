@@ -178,7 +178,7 @@ public class VocManager {
         String filename = "오답노트" + i + ".txt";
         try (PrintWriter outfile = new PrintWriter(filename)) {
             for (Word j : wrongAnswers) {
-                String str = j.getEng() + ", " + j.getKor();
+                String str = j.getEng() + "\t" + j.getKor();
                 outfile.println(str);
             }
             System.out.println("오답노트가 만들어졌습니다.");
@@ -188,7 +188,7 @@ public class VocManager {
         }
     }
 
-    //틀린 문제들을 인자로 전달하면 그 문제들을 문제오답노트i.txt에 저장하는 메서드
+    // 틀린 문제들을 인자로 전달하면 그 문제들을 문제오답노트i.txt에 저장하는 메서드
     public void WAnotes2(Vector<String> wp) {
         String filename = "문제오답노트" + i + ".txt";
         try (PrintWriter outfile = new PrintWriter(filename)) {
