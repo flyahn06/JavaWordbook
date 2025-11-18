@@ -42,6 +42,7 @@ public class VocManager {
         try (Scanner file = new Scanner(new File(fileName))) {
             String line;
             String[] lineSplit;
+            this.voc.clear();
 
             while (file.hasNextLine()) {
                 line = file.nextLine();
@@ -49,7 +50,6 @@ public class VocManager {
 
                 if (lineSplit.length < 3) {
                     System.out.printf("파일 %s에 문제가 있습니다.\n\t행(%s)이 잘못된 형식입니다.\n", this.fileName, line);
-                    return false;
                 }
 
                 if (!lineSplit[2].matches(isNumericRegex)) {
@@ -388,10 +388,7 @@ public class VocManager {
         filename = scan.nextLine();
         filename = "res/" + filename + ".txt";
 
-        if (this.makeVoc(filename)) {
-            this.fileName = fileName;
-            voc.clear();
-        }
+        this.makeVoc(filename);
     }
 
     public void rank(String problem) {
