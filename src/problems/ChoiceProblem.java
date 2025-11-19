@@ -39,11 +39,7 @@ public class ChoiceProblem extends Problem {
 
     @Override
     public void showProblem1() {
-        System.out.println(problemNumber + ". 다음 중 이 단어의 뜻을 고르시오.");
-        System.out.println("[ " + problem + " ]");
-        for (int i=0; i<4; i++) {
-            System.out.println(i+1 + ") " + this.vm.getVoc().get(wordList.get(i)).getKor());
-        }
+        System.out.println(this.getProblem1());
     }
 
     @Override
@@ -58,11 +54,7 @@ public class ChoiceProblem extends Problem {
 
     @Override
     public void showProblem2() {
-        System.out.println(problemNumber + ". 다음 중 이 뜻을 가진 단어를 고르시오.");
-        System.out.println("[ " + this.vm.getVoc().get(problem).getKor() + " ]");
-        for (int i=0; i<4; i++) {
-            System.out.println(i+1 + ") " + wordList.get(i));
-        }
+        System.out.println(this.getProblem2());
     }
 
     public String getProblem2() {
