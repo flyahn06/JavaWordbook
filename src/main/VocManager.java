@@ -39,11 +39,12 @@ public class VocManager {
 
     boolean makeVoc(String fileName) {
         int rank;
-        this.fileName = fileName;
+        HashMap<String, Word> tempVoc = new HashMap<>();
+        Vector<String> tempOrderedEnglish = new Vector<>();
+
         try (Scanner file = new Scanner(new File(fileName))) {
             String line;
             String[] lineSplit;
-            this.voc.clear();
 
             while (file.hasNextLine()) {
                 line = file.nextLine();
@@ -60,10 +61,15 @@ public class VocManager {
                     rank = 0;
                 }
 
-                this.addWord(lineSplit[0].trim(), lineSplit[1].trim(), rank);
+                tempVoc.put(lineSplit[0].trim(), new Word(lineSplit[0].trim(), lineSplit[1].trim(), rank));
+                if (!this.orderedEnglish.contains(lineSplit[0].trim()))
+                    this.orderedEnglish.add(lineSplit[0].trim());
             }
 
             System.out.printf("%s님의 단어장 생성완료\n", this.userName);
+            this.fileName = fileName;
+            this.voc = tempVoc;
+            this.orderedEnglish = tempOrderedEnglish;
 
         } catch (FileNotFoundException e) {
             System.out.println("파일을 찾을 수 없습니다.");
