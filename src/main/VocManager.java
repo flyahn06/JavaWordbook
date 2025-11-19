@@ -130,7 +130,7 @@ public class VocManager {
         System.out.println("단어가 잘 추가되었습니다.");
     }
 
-    void problem() {
+    void makeQuiz() {
         ProblemManager pm = new ProblemManager(this);
         pm.generateProblems();
         writeCorrectRate(pm, i-1);
@@ -162,7 +162,7 @@ public class VocManager {
                 case 4 -> addWordHelper();
                 case 5 -> editWord();
                 case 6 -> deleteWord();
-                case 7 -> problem();
+                case 7 -> makeQuiz();
                 case 8 -> fileSave();
                 case 9 -> fileLoad();
                 case 0 -> printMenu();
@@ -367,7 +367,7 @@ public class VocManager {
 
         try {
             System.out.println("1) 파일 덮어쓰기 2) 새로운 파일로 저장하기");
-            System.out.print("선택하세요: ");
+            System.out.print("저장> ");
             choice = scan.nextInt();
             scan.nextLine();
 
@@ -375,7 +375,6 @@ public class VocManager {
             scan.nextLine();
         }
 
-        System.out.println();
         switch (choice) {
             case 1 -> this.vocToFile(this.fileName);
             case 2 -> {
