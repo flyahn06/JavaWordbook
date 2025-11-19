@@ -2,6 +2,7 @@ package problems;
 
 import main.VocManager;
 import main.Word;
+
 import java.util.*;
 
 public class ProblemManager {
@@ -14,6 +15,9 @@ public class ProblemManager {
     public Vector<String> wrongProblems = new Vector<String>();
     public Vector<Word> wrongWords = new Vector<Word>();
     String temp = "";
+    static Random rand = new Random();
+    static Scanner scan = new Scanner(System.in);
+
 
     public ProblemManager(VocManager vm) {
         rightCount = 0;
@@ -21,11 +25,74 @@ public class ProblemManager {
         this.vm = vm;
     }
 
-    public void generateProblems() {
-        Scanner scan = new Scanner(System.in);
-        Random rand = new Random();
+    public void choiceProblems(int i) {
         String userAnswer;
+        ChoiceProblem choiceProblem = new ChoiceProblem(i + 1, problems[i], vm);
+        if (rand.nextInt(2) == 0) {
+            temp = choiceProblem.getProblem1();
+            System.out.println(temp);
+        }
+        else {
+            temp = choiceProblem.getProblem2();
+            System.out.println(temp);
+        }
+        System.out.print("> ");
+        userAnswer = scan.nextLine();
+        if (choiceProblem.isCorrect(userAnswer)) {
+            System.out.println("정답입니다.");
+            rightCount++;
+        }
+        else {
+            System.out.println("오답입니다. 정답은 "+choiceProblem.answerNumber+"번입니다.");
+            temp += ("\n" + "오답입니다. 정답은 "+choiceProblem.answerNumber+"번입니다. (내 답: " + userAnswer + ")\n");
+            wrongCount++;
+            vm.rank(problems[i]);
+            wrongProblems.add(temp);
+            wrongWords.add(vm.voc.get(problems[i]));
+        }
+    }
 
+    private void subjectiveProblems(int i) {
+        String userAnswer;
+        SubjectiveProblem subjectiveProblem = new SubjectiveProblem(i+1,problems[i], vm, rand.nextInt(2)+1);
+        if (subjectiveProblem.subjectiveType == 1) {
+            temp = subjectiveProblem.getProblem1();
+            System.out.println(temp);
+        }
+        else {
+            temp = subjectiveProblem.getProblem2();
+            System.out.println(temp);
+        }
+        System.out.print("> ");
+        userAnswer = scan.nextLine();
+        if (subjectiveProblem.isCorrect(userAnswer)) {
+            System.out.println("정답입니다.");
+            rightCount++;
+        } else if (subjectiveProblem.subjectiveType==1) {
+            System.out.println("오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).getKor() + "입니다.");
+            temp += "\n" + "오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).getKor() + "입니다. (내 답: " + userAnswer + ")\n";
+            wrongCount++;
+            vm.rank(problems[i]);
+            wrongProblems.add(temp);
+            wrongWords.add(vm.voc.get(problems[i]));
+        } else {
+            System.out.println("오답입니다. 정답은 " + problems[i]+"입니다.");
+            temp += "\n" + "오답입니다. 정답은 " + problems[i]+"입니다. (내 답: " + userAnswer + ")\n";
+            wrongCount++;
+            vm.rank(problems[i]);
+            wrongProblems.add(temp);
+            wrongWords.add(vm.voc.get(problems[i]));
+        }
+    }
+
+    public void mixedProblems(int i) {
+        if (rand.nextInt(2) == 0)
+            choiceProblems(i);
+        else
+            subjectiveProblems(i);
+    }
+
+    public void generateProblems() {
         while (true) {
             System.out.println("1) 객관식 2) 주관식 3) 객관식+주관식");
             System.out.print("> ");
@@ -75,131 +142,17 @@ public class ProblemManager {
         switch (problemType) {
             case 1 -> {
                 for (int i = 0; i < problemCount; i++) {
-                    ChoiceProblem choiceProblem = new ChoiceProblem(i + 1, problems[i], vm);
-                    if (rand.nextInt(2) == 0) {
-                        //choiceProblem.showProblem1();
-                        temp = choiceProblem.getProblem1();
-                        System.out.println(temp);
-                    }
-                    else {
-                        //choiceProblem.showProblem2();
-                        temp = choiceProblem.getProblem2();
-                        System.out.println(temp);
-                    }
-                    System.out.print("> ");
-                    userAnswer = scan.nextLine();
-                    if (choiceProblem.isCorrect(userAnswer)) {
-                        System.out.println("정답입니다.");
-                        rightCount++;
-                    }
-                    else {
-                        System.out.println("오답입니다. 정답은 "+choiceProblem.answerNumber+"번입니다.");
-                        temp += ("\n" + "오답입니다. 정답은 "+choiceProblem.answerNumber+"번입니다. (내 답: " + userAnswer + ")\n");
-                        wrongCount++;
-                        vm.rank(problems[i]);
-                        wrongProblems.add(temp);
-                        wrongWords.add(vm.voc.get(problems[i]));
-                    }
-
+                    choiceProblems(i);
                 }
             }
             case 2 -> {
-                for (int i=0; i < problemCount; i++) {
-                    SubjectiveProblem subjectiveProblem = new SubjectiveProblem(i+1,problems[i], vm, rand.nextInt(2)+1);
-                    if (subjectiveProblem.subjectiveType == 1) {
-                        //subjectiveProblem.showProblem1();
-                        temp = subjectiveProblem.getProblem1();
-                        System.out.println(temp);
-                    }
-                    else {
-                        //subjectiveProblem.showProblem2();
-                        temp = subjectiveProblem.getProblem2();
-                        System.out.println(temp);
-                    }
-                    System.out.print("> ");
-                    userAnswer = scan.nextLine();
-                    if (subjectiveProblem.isCorrect(userAnswer)) {
-                        System.out.println("정답입니다.");
-                        rightCount++;
-                    } else if (subjectiveProblem.subjectiveType==1) {
-                        System.out.println("오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).getKor() + "입니다.");
-                        temp += "\n" + "오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).getKor() + "입니다. (내 답: " + userAnswer + ")\n";
-                        wrongCount++;
-                        vm.rank(problems[i]);
-                        wrongProblems.add(temp);
-                        wrongWords.add(vm.voc.get(problems[i]));
-                    } else {
-                        System.out.println("오답입니다. 정답은 " + problems[i]+"입니다.");
-                        temp += "\n" + "오답입니다. 정답은 " + problems[i]+"입니다. (내 답: " + userAnswer + ")\n";
-                        wrongCount++;
-                        vm.rank(problems[i]);
-                        wrongProblems.add(temp);
-                        wrongWords.add(vm.voc.get(problems[i]));
-                    }
+                for (int i = 0; i < problemCount; i++) {
+                    subjectiveProblems(i);
                 }
             }
             case 3 -> {
-                for (int i=0; i < problemCount; i++) {
-                    if (rand.nextInt(2) == 0) {
-                        ChoiceProblem choiceProblem = new ChoiceProblem(i + 1, problems[i], vm);
-                        if (rand.nextInt(2) == 0) {
-                            //choiceProblem.showProblem1();
-                            temp = choiceProblem.getProblem1();
-                            System.out.println(temp);
-                        }
-                        else {
-                            //choiceProblem.showProblem2();
-                            temp = choiceProblem.getProblem2();
-                            System.out.println(temp);
-                        }
-                        System.out.print("> ");
-                        userAnswer = scan.nextLine();
-                        if (choiceProblem.isCorrect(userAnswer)) {
-                            System.out.println("정답입니다.");
-                            rightCount++;
-                        }
-                        else {
-                            System.out.println("오답입니다. 정답은 "+choiceProblem.answerNumber+"번입니다.");
-                            temp += ("\n" + "오답입니다. 정답은 "+choiceProblem.answerNumber+"번입니다. (내 답: " + userAnswer + ")\n");
-                            wrongCount++;
-                            vm.rank(problems[i]);
-                            wrongProblems.add(temp);
-                            wrongWords.add(vm.voc.get(problems[i]));
-                        }
-                    }
-                    else {
-                        SubjectiveProblem subjectiveProblem = new SubjectiveProblem(i+1,problems[i], vm, rand.nextInt(2)+1);
-                        if (subjectiveProblem.subjectiveType == 1) {
-                            //subjectiveProblem.showProblem1();
-                            temp = subjectiveProblem.getProblem1();
-                            System.out.println(temp);
-                        }
-                        else {
-                            //subjectiveProblem.showProblem2();
-                            temp = subjectiveProblem.getProblem2();
-                            System.out.println(temp);
-                        }
-                        System.out.print("> ");
-                        userAnswer = scan.nextLine();
-                        if (subjectiveProblem.isCorrect(userAnswer)) {
-                            System.out.println("정답입니다.");
-                            rightCount++;
-                        } else if (subjectiveProblem.subjectiveType==1) {
-                            System.out.println("오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).getKor() + "입니다.");
-                            temp += "\n" + "오답입니다. 정답은 " + this.vm.getVoc().get(subjectiveProblem.problem).getKor() + "입니다. (내 답: " + userAnswer + ")\n";
-                            wrongCount++;
-                            vm.rank(problems[i]);
-                            wrongProblems.add(temp);
-                            wrongWords.add(vm.voc.get(problems[i]));
-                        } else {
-                            System.out.println("오답입니다. 정답은 " + problems[i]+"입니다.");
-                            temp += "\n" + "오답입니다. 정답은 " + problems[i]+"입니다. (내 답: " + userAnswer + ")\n";
-                            wrongCount++;
-                            vm.rank(problems[i]);
-                            wrongProblems.add(temp);
-                            wrongWords.add(vm.voc.get(problems[i]));
-                        }
-                    }
+                for (int i = 0; i < problemCount; i++) {
+                    mixedProblems(i);
                 }
             }
         }

@@ -129,6 +129,7 @@ public class VocManager {
         pm.generateProblems();
         writeCorrectRate(pm, i-1);
         wrongAnswers(pm);
+        i++;
     }
 
     void menu() {
@@ -187,7 +188,6 @@ public class VocManager {
                 outfile.println(str);
             }
             System.out.println("오답노트가 만들어졌습니다.");
-            i++;
         } catch (FileNotFoundException e) {
             System.out.println("오류");
         }
