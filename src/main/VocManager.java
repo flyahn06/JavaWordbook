@@ -140,7 +140,7 @@ public class VocManager {
 
     void makeQuiz() {
         ProblemManager pm = new ProblemManager(this);
-        pm.generateProblems();
+        pm.startQuiz();
         writeCorrectRate(pm, i-1);
         wrongAnswers(pm);
         i++;
@@ -148,7 +148,7 @@ public class VocManager {
 
     void makeQuizTop10() {
         ProblemManager pm = new ProblemManager(this);
-        pm.generateProblems();
+        pm.startQuizTop10();
         writeCorrectRate(pm, i-1);
         wrongAnswers(pm);
         i++;

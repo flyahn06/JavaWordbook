@@ -92,7 +92,7 @@ public class ProblemManager {
             subjectiveProblems(i);
     }
 
-    public void generateProblems() {
+    public void startQuiz() {
         if (this.vm.getOrderedEnglish().size() < 4) {
             problemType = 2;
             System.out.println("단어 수가 충분하지 않아 객관식을 출제할 수 없습니다.");
@@ -129,21 +129,57 @@ public class ProblemManager {
             }
         }
 
-        Vector<String> engList = this.vm.getOrderedEnglish();
-        Collections.shuffle(engList);
+        scan.nextLine();
 
-        while(engList.size() < problemCount) {
-            Vector<String> engListTemp = this.vm.getOrderedEnglish();
+        generateQuiz(this.vm.getOrderedEnglish());
+    }
+
+    public void startQuizTop10() {
+        // 주관식 고정
+        Vector<String> engList = new Vector<>();
+
+        System.out.println("오답률 Top 10 집중학습은 주관식으로만 진행됩니다.");
+        this.problemType = 2;
+
+        Vector<Word> words = new Vector<>(this.vm.getVoc().values());
+
+        if (words.size() < 10) {
+            System.out.println("주의: 단어 수가 10개 미만입니다.");
+            System.out.printf("문항 수를 %d개로 조정합니다.\n", words.size());
+            this.problemCount = words.size();
+        } else {
+            System.out.println("총 문항 수는 10개입니다.");
+            this.problemCount = 10;
+        }
+
+        words.sort(new Comparator<Word>() {
+            @Override
+            public int compare(Word o1, Word o2) {
+                return Integer.compare(o2.getRanking(), o1.getRanking());
+            }
+        });
+
+        for (int i = 0; i < this.problemCount; i++) {
+            engList.add(words.get(i).getEng());
+        }
+
+        generateQuiz(engList);
+    }
+
+    private void generateQuiz(Vector<String> with) {
+        Collections.shuffle(with);
+
+        while(with.size() < problemCount) {
+            Vector<String> engListTemp = new Vector<>(with);
             Collections.shuffle(engListTemp);
-            engList.addAll(engListTemp);
+            with.addAll(engListTemp);
         }
 
         problems = new String[problemCount];
         for (int i=0; i<problemCount; i++) {
-            problems[i] = engList.get(i);
+            problems[i] = with.get(i);
         }
 
-        scan.nextLine();
 
         switch (problemType) {
             case 1 -> {
