@@ -364,8 +364,6 @@ public class VocManager {
 
         if (targetWord != null) {
             System.out.println("단어의 뜻: " + targetWord.getKor());
-        } else {
-            System.out.println("찾는 단어가 단어장에 없습니다.");
         }
 
         else {
