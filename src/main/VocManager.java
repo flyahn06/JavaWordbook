@@ -277,11 +277,16 @@ public class VocManager {
         System.out.println("------ 단어 검색 2 ------");
         System.out.print("검색할 부분 단어를 입력하세요 (영단어) : ");
         String sWord = scan.nextLine();
+        boolean temp = true;
 
         for (Word word : this.voc.values()) {
             if (word.getEng().indexOf(sWord) == 0) {
                 System.out.println(word);
+                temp = false;
             }
+        }
+        if(temp) {
+            System.out.printf("찾으시는 단어가 없습니다");
         }
     }
 
@@ -293,6 +298,10 @@ public class VocManager {
 
         if (targetWord != null) {
             System.out.println("단어의 뜻: " + targetWord.getKor());
+        }
+
+        else {
+            System.out.println("찾으시는 단어가 없습니다.");
         }
     }
 
