@@ -47,6 +47,8 @@ public class VocManager {
 
     boolean makeVoc(String fileName) {
         int rank;
+        // makeVoc이 실패한 경우 이전의 voc, orderedEnglish를 써야 하기 때문에
+        // 임시로 만든 후 함수의 마지막에서 바꿔야 함
         HashMap<String, Word> tempVoc = new HashMap<>();
         Vector<String> tempOrderedEnglish = new Vector<>();
 
@@ -58,10 +60,15 @@ public class VocManager {
                 line = file.nextLine();
                 lineSplit = line.split("\t");
 
+                // 한 요소가 누락된 경우
+                // 이 행을 건너뜀
                 if (lineSplit.length < 3) {
                     System.out.printf("파일 %s에 문제가 있습니다.\n\t행(%s)이 잘못된 형식입니다.\n", this.fileName, line);
+                    continue;
                 }
 
+                // rank 자리에 문자가 있는 경우
+                // 경고를 출력하고, rank를 0으로 자동 설정함
                 try {
                     rank = Integer.parseInt(lineSplit[2].trim());
                 } catch (NumberFormatException e) {
@@ -74,12 +81,15 @@ public class VocManager {
                     tempOrderedEnglish.add(lineSplit[0].trim());
             }
 
+            // 제대로 생성된 경우
             System.out.printf("%s님의 단어장 생성완료\n", this.userName);
             this.fileName = fileName;
             this.voc = tempVoc;
             this.orderedEnglish = tempOrderedEnglish;
 
         } catch (FileNotFoundException e) {
+            // 이 경우에는 this.voc, this.fileName, this.orderedEnglish에 아무런 변화가 없기 때문에
+            // 이전에 로딩해 둔 단어장을 그대로 사용가능함
             System.out.println("파일을 찾을 수 없습니다.");
             return false;
         }
@@ -114,7 +124,8 @@ public class VocManager {
             return;
         }
 
-        if (this.orderedEnglish.contains(eng)) {
+        // 검색이 빠르므로 여기서는 hashmap 사용
+        if (this.voc.get(eng) != null) {
             String option;
             System.out.print("[주의] 단어장에 단어가 이미 존재합니다. 계속 진행하면 기존의 단어가 대체됩니다. 진행하시겠습니까? (Y/N) ");
             option = scan.nextLine();
@@ -129,6 +140,7 @@ public class VocManager {
             kor = VocManager.translator.getMeaning(eng);
 
             if (kor == null) {
+                // 단어 검색이 실패한 경우는 단어를 추가하지 않음
                 System.out.println("단어의 뜻을 찾을 수 없습니다!");
                 return;
             }
@@ -140,7 +152,7 @@ public class VocManager {
 
     void makeQuiz() {
         ProblemManager pm = new ProblemManager(this);
-        pm.generateProblems();
+        pm.startQuiz();
         writeCorrectRate(pm, i-1);
         wrongAnswers(pm);
         i++;
@@ -148,7 +160,7 @@ public class VocManager {
 
     void makeQuizTop10() {
         ProblemManager pm = new ProblemManager(this);
-        pm.generateProblems();
+        pm.startQuizTop10();
         writeCorrectRate(pm, i-1);
         wrongAnswers(pm);
         i++;
@@ -195,8 +207,15 @@ public class VocManager {
     }
 
     public void wrongAnswers(ProblemManager PM) {
+        int choice;
         System.out.print("문제오답노트를 만들기를 원하면 1을 입력하시오.  ");
-        int choice = scan.nextInt();
+
+        try {
+            choice = scan.nextInt();
+        } catch (InputMismatchException e) {
+            choice = 0;
+        }
+
         if(choice == 1) {
             WAnotes2(PM.wrongProblems);
         }
@@ -235,7 +254,10 @@ public class VocManager {
     //정답률 계산후 scores.txt에 정답률 append하는 메서드
     public void writeCorrectRate(ProblemManager PM, int i) {
         double correctRate = (double) PM.rightCount / PM.problemCount;
-        String contentToAppend = i +", "+ String.format("%.2f", correctRate); //i, 정답률의 형태
+        String contentToAppend = i  + ", " +
+                this.userName + ", " +
+                this.fileName + ", " +
+                String.format("%.2f", correctRate); //i, 정답률의 형태
         try (FileWriter fw = new FileWriter("res/scores.txt", true)) {
             fw.write("\n"+contentToAppend); //scores.txt에 contentToAppend를 append
         } catch (IOException e) {
@@ -244,6 +266,8 @@ public class VocManager {
     }
 
     public void printAllWords() {
+        // 전체 단어 출력
+        // 순서가 중요하기 때문에 orderedEnglish를 순회해야 함
         for (String w : this.orderedEnglish) {
             System.out.println(this.voc.get(w));
         }
@@ -297,23 +321,29 @@ public class VocManager {
         // 여기서부터 변경하고자 하는 단어가 존재함이 보장됨
         switch (option) {
             case 1 -> {
+                // 영단어를 수정할 때
                 System.out.print("바뀔 단어를 입력하세요: ");
                 temp = scan.nextLine();
 
                 if (temp.isEmpty()) {
                     System.out.println("단어가 변경되지 않았습니다.");
                 } else {
-                    originalIndex = this.orderedEnglish.indexOf(targetWord.getEng());
-                    this.voc.remove(targetWord.getEng(), targetWord);
-                    this.orderedEnglish.remove(originalIndex);
+                    // 영단어가 수정되면 key가 수정되는 것이기 때문에
+                    // key를 순서대로 모아둔 orderedEnglish도 수정해줘야 함
+                    originalIndex = this.orderedEnglish.indexOf(targetWord.getEng());  // 원본 인덱스 저장
+                    this.voc.remove(targetWord.getEng(), targetWord);  // 기존 entry 삭제
+                    this.orderedEnglish.remove(originalIndex);  // 기존 element 삭제
 
                     targetWord.setEng(temp);
                     this.voc.put(temp, targetWord);
+                    // orderedEnglish는 순서 유자기 중요하므로
+                    // 원래 수정됐던 단어의 인덱스에 그대로 삽입해줘야 함
                     this.orderedEnglish.insertElementAt(temp, originalIndex);
                     System.out.println("단어가 잘 변경되었습니다.");
                 }
             }
             case 2 -> {
+                // 단어 뜻을 추가하는 경우
                 System.out.print("추가할 뜻을 입력하세요(,로 뜻 구분): ");
                 temp = scan.nextLine();
 
@@ -325,6 +355,7 @@ public class VocManager {
                 }
             }
             case 3 -> {
+                // 단어 뜻을 완전히 처음부터 바꾸는 경우
                 System.out.print("새로운 뜻을 입력하세요(,로 뜻 구분): ");
                 temp = scan.nextLine();
 
@@ -353,7 +384,7 @@ public class VocManager {
             }
         }
         if(temp) {
-            System.out.printf("찾으시는 단어가 없습니다");
+            System.out.println("찾으시는 단어가 없습니다");
         }
     }
 
@@ -387,6 +418,7 @@ public class VocManager {
         }
     }
 
+    // i 저장
     public void savei() {
         try (PrintWriter outfile = new PrintWriter("res/i.txt")) {
             outfile.println(i);

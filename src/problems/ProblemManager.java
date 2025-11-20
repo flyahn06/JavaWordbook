@@ -92,7 +92,7 @@ public class ProblemManager {
             subjectiveProblems(i);
     }
 
-    public void generateProblems() {
+    public void startQuiz() {
         if (this.vm.getOrderedEnglish().size() < 4) {
             problemType = 2;
             System.out.println("단어 수가 충분하지 않아 객관식을 출제할 수 없습니다.");
@@ -129,21 +129,67 @@ public class ProblemManager {
             }
         }
 
-        Vector<String> engList = this.vm.getOrderedEnglish();
-        Collections.shuffle(engList);
+        scan.nextLine();
 
-        while(engList.size() < problemCount) {
-            Vector<String> engListTemp = this.vm.getOrderedEnglish();
+        generateQuiz(this.vm.getOrderedEnglish());
+    }
+
+    public void startQuizTop10() {
+        // 주관식 고정
+        Vector<String> engList = new Vector<>();
+
+        System.out.println("오답률 Top 10 집중학습은 주관식으로만 진행됩니다.");
+        this.problemType = 2;
+
+        Vector<Word> words = new Vector<>(this.vm.getVoc().values());
+
+        // 단어가 10개가 안 되어서
+        // Top 10을 뽑을 수 없는 경우 최대 단어의 개수로 설정
+        if (words.size() < 10) {
+            System.out.println("주의: 단어 수가 10개 미만입니다.");
+            System.out.printf("문항 수를 %d개로 조정합니다.\n", words.size());
+            this.problemCount = words.size();
+        } else {
+            System.out.println("총 문항 수는 10개입니다.");
+            this.problemCount = 10;
+        }
+
+        // Word의 rank를 기준으로 내림차순 정렬
+        words.sort(new Comparator<Word>() {
+            @Override
+            public int compare(Word o1, Word o2) {
+                return Integer.compare(o2.getRanking(), o1.getRanking());
+            }
+        });
+
+        // 내림차순으로 정렬되어 있기 때문에
+        // 앞에서 N개를 뽑으면 오답률 Top N이 됨
+        for (int i = 0; i < this.problemCount; i++) {
+            engList.add(words.get(i).getEng());
+        }
+
+        generateQuiz(engList);
+    }
+
+    /**
+     * 주어진 Vector 객체를 사용해 문제를 만듧니다.
+     * @param with
+     * 문제를 만들 영단어의 vector입니다. 중복은 허용되나, generateQuiz가 동작하는 동안에는 이 Vector의 모든 element가 vm.voc.key에 있음이 보장되어야 합니다.
+     */
+    private void generateQuiz(Vector<String> with) {
+        Collections.shuffle(with);
+
+        while(with.size() < problemCount) {
+            Vector<String> engListTemp = new Vector<>(with);
             Collections.shuffle(engListTemp);
-            engList.addAll(engListTemp);
+            with.addAll(engListTemp);
         }
 
         problems = new String[problemCount];
         for (int i=0; i<problemCount; i++) {
-            problems[i] = engList.get(i);
+            problems[i] = with.get(i);
         }
 
-        scan.nextLine();
 
         switch (problemType) {
             case 1 -> {

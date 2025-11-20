@@ -1,1 +1,1 @@
-idx, rate
+idx, name, filename, rate
