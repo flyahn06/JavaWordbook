@@ -12,6 +12,7 @@ public class SubjectiveProblem extends Problem{
 
     @Override
     public boolean isCorrect(String input) {
+        if (input.isEmpty()) return false;
         if (subjectiveType == 1) {
             String[] inputArray = input.split(",\\s*");
             for (String s : inputArray) {
