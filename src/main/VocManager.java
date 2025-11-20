@@ -195,8 +195,15 @@ public class VocManager {
     }
 
     public void wrongAnswers(ProblemManager PM) {
+        int choice;
         System.out.print("문제오답노트를 만들기를 원하면 1을 입력하시오.  ");
-        int choice = scan.nextInt();
+
+        try {
+            choice = scan.nextInt();
+        } catch (InputMismatchException e) {
+            choice = 0;
+        }
+
         if(choice == 1) {
             WAnotes2(PM.wrongProblems);
         }
@@ -235,7 +242,10 @@ public class VocManager {
     //정답률 계산후 scores.txt에 정답률 append하는 메서드
     public void writeCorrectRate(ProblemManager PM, int i) {
         double correctRate = (double) PM.rightCount / PM.problemCount;
-        String contentToAppend = i +", "+ String.format("%.2f", correctRate); //i, 정답률의 형태
+        String contentToAppend = i  + ", " +
+                this.userName + ", " +
+                this.fileName + ", " +
+                String.format("%.2f", correctRate); //i, 정답률의 형태
         try (FileWriter fw = new FileWriter("res/scores.txt", true)) {
             fw.write("\n"+contentToAppend); //scores.txt에 contentToAppend를 append
         } catch (IOException e) {
