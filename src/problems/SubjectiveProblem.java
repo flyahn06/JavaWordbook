@@ -12,6 +12,7 @@ public class SubjectiveProblem extends Problem{
 
     @Override
     public boolean isCorrect(String input) {
+        if (input.isEmpty()) return false;
         if (subjectiveType == 1) {
             String[] inputArray = input.split(",\\s*");
             for (String s : inputArray) {
@@ -27,8 +28,7 @@ public class SubjectiveProblem extends Problem{
 
     @Override
     public void showProblem1() {
-        System.out.println(problemNumber + ". 다음 단어의 뜻을 쓰시오.");
-        System.out.println("[ " + problem + " ]");
+        System.out.println(this.getProblem1());
     }
 
     @Override
@@ -40,8 +40,7 @@ public class SubjectiveProblem extends Problem{
 
     @Override
     public void showProblem2() {
-        System.out.println(problemNumber + ". 다음 뜻을 가진 단어를 쓰시오.");
-        System.out.println("[ " + this.vm.getVoc().get(problem).getKor() + " ]");
+        System.out.println(this.getProblem2());
     }
 
     public String getProblem2() {

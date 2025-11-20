@@ -2,22 +2,23 @@ package problems;
 
 import main.VocManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class ChoiceProblem extends Problem {
     List<String> wordList = new ArrayList<>();
     List<String> wrongWordList = new ArrayList<>();
     int answerNumber;
+    static Random rand = new Random();
 
     public ChoiceProblem(int problemNumber, String problem, VocManager vm) {
         super(problemNumber,0,problem, vm);// word: 정답단어
         Vector<String> engList = this.vm.getOrderedEnglish();
-        Collections.shuffle(engList);
+        int randomNumber;
+
         for (int i=0; i<3; i++) {
-            if (!problem.equals(engList.get(i))) wrongWordList.add(engList.get(i));
+            randomNumber = rand.nextInt(engList.size());
+            if (!problem.equals(engList.get(randomNumber)) && !wrongWordList.contains(engList.get(randomNumber)))
+                wrongWordList.add(engList.get(i));
             else i--;
         }
         wordList.add(problem);
@@ -39,11 +40,7 @@ public class ChoiceProblem extends Problem {
 
     @Override
     public void showProblem1() {
-        System.out.println(problemNumber + ". 다음 중 이 단어의 뜻을 고르시오.");
-        System.out.println("[ " + problem + " ]");
-        for (int i=0; i<4; i++) {
-            System.out.println(i+1 + ") " + this.vm.getVoc().get(wordList.get(i)).getKor());
-        }
+        System.out.println(this.getProblem1());
     }
 
     @Override
@@ -58,11 +55,7 @@ public class ChoiceProblem extends Problem {
 
     @Override
     public void showProblem2() {
-        System.out.println(problemNumber + ". 다음 중 이 뜻을 가진 단어를 고르시오.");
-        System.out.println("[ " + this.vm.getVoc().get(problem).getKor() + " ]");
-        for (int i=0; i<4; i++) {
-            System.out.println(i+1 + ") " + wordList.get(i));
-        }
+        System.out.println(this.getProblem2());
     }
 
     public String getProblem2() {

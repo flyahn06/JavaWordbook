@@ -9,14 +9,18 @@ public class Word {
     String eng;
     Vector<String> kor;
     int ranking;
-    Translator translator;
 
-    public Word(String eng, String kor, String ranking, Translator translator) {
-        super();
+    public Word(String eng, String kor, int ranking) {
+        this.eng = eng;
+        this.kor = new Vector<>();
+        this.ranking = ranking;
+        this.setKor(kor);
+    }
+
+    public Word(String eng, String kor, String ranking) {
         this.eng = eng;
         this.kor = new Vector<>();
         this.ranking = Integer.parseInt(ranking);
-        this.translator = translator;
         this.setKor(kor);
     }
 
@@ -43,13 +47,11 @@ public class Word {
     }
 
     public void setKor(String kor) {
-        if (kor.equals("?") || kor.isEmpty()) {
-            Vector<String> meaning = new Vector<>();
-            meaning.add(this.translator.getMeaning(this.getEng()));
-            this.kor = meaning;
-            System.out.println("검색된 단어 뜻: " + meaning.get(0));
-            return;
-        }
+        this.setKor(kor, true);
+    }
+
+    public void setKor(String kor, boolean clear) {
+        if (clear) this.kor.clear();
         for (String k: kor.split(",")) {
             this.kor.add(k.trim());
         }
