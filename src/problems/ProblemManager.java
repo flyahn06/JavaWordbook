@@ -143,6 +143,8 @@ public class ProblemManager {
 
         Vector<Word> words = new Vector<>(this.vm.getVoc().values());
 
+        // 단어가 10개가 안 되어서
+        // Top 10을 뽑을 수 없는 경우 최대 단어의 개수로 설정
         if (words.size() < 10) {
             System.out.println("주의: 단어 수가 10개 미만입니다.");
             System.out.printf("문항 수를 %d개로 조정합니다.\n", words.size());
@@ -152,6 +154,7 @@ public class ProblemManager {
             this.problemCount = 10;
         }
 
+        // Word의 rank를 기준으로 내림차순 정렬
         words.sort(new Comparator<Word>() {
             @Override
             public int compare(Word o1, Word o2) {
@@ -159,6 +162,8 @@ public class ProblemManager {
             }
         });
 
+        // 내림차순으로 정렬되어 있기 때문에
+        // 앞에서 N개를 뽑으면 오답률 Top N이 됨
         for (int i = 0; i < this.problemCount; i++) {
             engList.add(words.get(i).getEng());
         }
@@ -166,6 +171,11 @@ public class ProblemManager {
         generateQuiz(engList);
     }
 
+    /**
+     * 주어진 Vector 객체를 사용해 문제를 만듧니다.
+     * @param with
+     * 문제를 만들 영단어의 vector입니다. 중복은 허용되나, generateQuiz가 동작하는 동안에는 이 Vector의 모든 element가 vm.voc.key에 있음이 보장되어야 합니다.
+     */
     private void generateQuiz(Vector<String> with) {
         Collections.shuffle(with);
 
