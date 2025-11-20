@@ -2,22 +2,23 @@ package problems;
 
 import main.VocManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class ChoiceProblem extends Problem {
     List<String> wordList = new ArrayList<>();
     List<String> wrongWordList = new ArrayList<>();
     int answerNumber;
+    static Random rand = new Random();
 
     public ChoiceProblem(int problemNumber, String problem, VocManager vm) {
         super(problemNumber,0,problem, vm);// word: 정답단어
         Vector<String> engList = this.vm.getOrderedEnglish();
-        Collections.shuffle(engList);
+        int randomNumber;
+
         for (int i=0; i<3; i++) {
-            if (!problem.equals(engList.get(i))) wrongWordList.add(engList.get(i));
+            randomNumber = rand.nextInt(engList.size());
+            if (!problem.equals(engList.get(randomNumber)) && !wrongWordList.contains(engList.get(randomNumber)))
+                wrongWordList.add(engList.get(i));
             else i--;
         }
         wordList.add(problem);

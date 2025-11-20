@@ -93,19 +93,25 @@ public class ProblemManager {
     }
 
     public void generateProblems() {
-        while (true) {
-            System.out.println("1) 객관식 2) 주관식 3) 객관식+주관식");
-            System.out.print("> ");
+        if (this.vm.getOrderedEnglish().size() < 4) {
+            problemType = 2;
+            System.out.println("단어 수가 충분하지 않아 객관식을 출제할 수 없습니다.");
+            System.out.println("주관식 문제만 출제합니다.");
+        } else {
+            while (true) {
+                System.out.println("1) 객관식 2) 주관식 3) 객관식+주관식");
+                System.out.print("> ");
 
-            try {
-                problemType = scan.nextInt();
+                try {
+                    problemType = scan.nextInt();
 
-                if (problemType==1 || problemType==2 || problemType==3) break;
-                else System.out.println("입력이 잘못되었습니다.");
+                    if (problemType == 1 || problemType == 2 || problemType == 3) break;
+                    else System.out.println("입력이 잘못되었습니다.");
 
-            } catch (InputMismatchException e) {
-                System.out.println("입력이 잘못되었습니다.");
-                scan.nextLine();
+                } catch (InputMismatchException e) {
+                    System.out.println("입력이 잘못되었습니다.");
+                    scan.nextLine();
+                }
             }
         }
 

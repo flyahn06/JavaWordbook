@@ -17,7 +17,6 @@ public class TestMain {
 
         if (manager.makeVoc(filePath)) {
             manager.menu();
-            manager.vocToFile(manager.getFileName());
         }
     }
 }

@@ -11,10 +11,18 @@ public class VocManager {
     public HashMap<String, Word> voc;
     Vector<String> orderedEnglish;
     String userName;
-    static int i = 1; //몇 번째 오답노트인지 구별하기 위한 변수임
+    static int i; //몇 번째 오답노트인지 구별하기 위한 변수임
     String fileName;
     static Translator translator = new Translator();
     static final String isNumericRegex = "\\d+";
+
+    static {
+        try (Scanner file = new Scanner(new File("res/i.txt"))) {
+            i = file.nextInt();
+        } catch (Exception e) {
+            i = 1;
+        }
+    }
 
     VocManager(String userName) {
         this.userName = userName;
@@ -62,8 +70,8 @@ public class VocManager {
                 }
 
                 tempVoc.put(lineSplit[0].trim(), new Word(lineSplit[0].trim(), lineSplit[1].trim(), rank));
-                if (!this.orderedEnglish.contains(lineSplit[0].trim()))
-                    this.orderedEnglish.add(lineSplit[0].trim());
+                if (!tempOrderedEnglish.contains(lineSplit[0].trim()))
+                    tempOrderedEnglish.add(lineSplit[0].trim());
             }
 
             System.out.printf("%s님의 단어장 생성완료\n", this.userName);
@@ -88,8 +96,8 @@ public class VocManager {
         System.out.printf("\n%s\n", banner);
         System.out.println("[검색] 1) 단어검색  2) 단어부분검색  3) 전체단어출력");
         System.out.println("[수정] 4) 단어추가  5) 단어수정  6) 단어삭제");
-        System.out.println("[퀴즈] 7) 퀴즈 풀기");
-        System.out.println("[파일] 8) 파일 저장하기  9) 파일 불러오기");
+        System.out.println("[퀴즈] 7) 퀴즈 풀기  8) 오답률 Top 10 집중학습");
+        System.out.println("[파일] 9) 파일 저장하기  10) 파일 불러오기");
         System.out.println("[메뉴] 0) 메뉴 출력  99) 프로그램 종료");
         System.out.println("-".repeat(banner.length() + 1));
         System.out.println();
@@ -138,6 +146,14 @@ public class VocManager {
         i++;
     }
 
+    void makeQuizTop10() {
+        ProblemManager pm = new ProblemManager(this);
+        pm.generateProblems();
+        writeCorrectRate(pm, i-1);
+        wrongAnswers(pm);
+        i++;
+    }
+
     void menu() {
         int choice = 0;
         boolean running = true;
@@ -163,11 +179,14 @@ public class VocManager {
                 case 5 -> editWord();
                 case 6 -> deleteWord();
                 case 7 -> makeQuiz();
-                case 8 -> fileSave();
-                case 9 -> fileLoad();
+                case 8 -> makeQuizTop10();
+                case 9 -> fileSave();
+                case 10 -> fileLoad();
                 case 0 -> printMenu();
                 case 99 -> {
                     System.out.println(userName + "의 단어장 프로그램을 종료합니다.");
+                    this.vocToFile(this.fileName);
+                    this.savei();
                     running = false;
                 }
                 default -> System.out.println("올바른 번호를 입력하세요!");
@@ -357,7 +376,15 @@ public class VocManager {
             this.fileWriter(outfile);
             System.out.println("단어장이 '" + filename + "' 파일로 저장되었습니다.");
         } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
+            System.out.println("파일 저장에 문제가 발생했습니다.");
+        }
+    }
+
+    public void savei() {
+        try (PrintWriter outfile = new PrintWriter("res/i.txt")) {
+            outfile.println(i);
+        } catch (FileNotFoundException e) {
+            System.out.println("i 저장에 문제가 발생했습니다.");
         }
     }
 
