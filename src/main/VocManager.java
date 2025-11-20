@@ -353,7 +353,7 @@ public class VocManager {
             }
         }
         if(temp) {
-            System.out.printf("찾으시는 단어가 없습니다");
+            System.out.println("찾으시는 단어가 없습니다");
         }
     }
 
