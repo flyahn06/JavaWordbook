@@ -402,6 +402,7 @@ public class VocManager {
         }
     }
 
+    // orderedEnglish에 저장된 단어들을 outfile에 옮겨적는 메소드
     public void fileWriter(PrintWriter outfile) {
         for (String w : this.orderedEnglish) {
             Word word = this.voc.get(w);
@@ -409,6 +410,7 @@ public class VocManager {
         }
     }
 
+    // fileWriter를 이용해 단어장 파일을 생성하는 메소드
     public void vocToFile(String filename) {
         try (PrintWriter outfile = new PrintWriter(filename)) {
             this.fileWriter(outfile);
@@ -427,6 +429,7 @@ public class VocManager {
         }
     }
 
+    // 파일을 저장하는 메소드
     public void fileSave() {
         int choice = 0;
         String filename;
@@ -442,22 +445,23 @@ public class VocManager {
         }
 
         switch (choice) {
-            case 1 -> this.vocToFile(this.fileName);
+            case 1 -> this.vocToFile(this.fileName); // 기존 파일에 덮어쓰기
             case 2 -> {
-                System.out.print("새 파일의 이름을 입력하세요: ");
+                System.out.print("새 파일의 이름을 입력하세요: "); // 새로운 파일로 저장하기
                 filename = scan.nextLine();
                 filename = filename.trim().replaceAll("\\s+", "_");
 
                 if (!(filename.indexOf(".txt") == filename.length() - 4))
-                    filename = filename + ".txt";
+                    filename = filename + ".txt"; // 사용자가 입력한 파일 이름에 .txt가 없을 경우 .txt 붙이기
 
-                filename = "res/" + filename;
+                filename = "res/" + filename; // res/filename.txt 형식으로 저장
                 this.vocToFile(filename);
             }
             default -> System.out.println("입력이 잘못되어 메뉴로 돌아갑니다.");
         }
     }
 
+    // 파일을 불러오는 메소드
     public void fileLoad() {
         String filename, option;
 
@@ -465,15 +469,16 @@ public class VocManager {
         option = scan.nextLine().toLowerCase().trim();
 
         if (option.isEmpty() || option.equals("y"))
-            this.vocToFile(this.fileName);
+            this.vocToFile(this.fileName); // 기존 파일에 변경사항 저장
 
         System.out.print("불러올 파일의 이름을 입력하세요: ");
         filename = scan.nextLine();
         filename = "res/" + filename;
 
-        this.makeVoc(filename);
+        this.makeVoc(filename); // 단어장 생성
     }
 
+    // 퀴즈에서 사용자가 특정 단어를 틀린 횟수를 +1 하는 메소드
     public void rank(String problem) {
         voc.get(problem).setRanking(voc.get(problem).getRanking() + 1);
     }

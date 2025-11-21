@@ -30,11 +30,11 @@ public class ProblemManager {
         ChoiceProblem choiceProblem = new ChoiceProblem(i + 1, problems[i], vm);
         if (rand.nextInt(2) == 0) {
             temp = choiceProblem.getProblem1();
-            System.out.println(temp);
+            System.out.println(temp); // eng to kor 문제 출제
         }
         else {
             temp = choiceProblem.getProblem2();
-            System.out.println(temp);
+            System.out.println(temp); // kor to eng 문제 출제
         }
         System.out.print("> ");
         userAnswer = scan.nextLine();
@@ -57,11 +57,11 @@ public class ProblemManager {
         SubjectiveProblem subjectiveProblem = new SubjectiveProblem(i+1,problems[i], vm, rand.nextInt(2)+1);
         if (subjectiveProblem.subjectiveType == 1) {
             temp = subjectiveProblem.getProblem1();
-            System.out.println(temp);
+            System.out.println(temp); // eng to kor 문제 출제
         }
         else {
             temp = subjectiveProblem.getProblem2();
-            System.out.println(temp);
+            System.out.println(temp); // kor to eng 문제 출제
         }
         System.out.print("> ");
         userAnswer = scan.nextLine();
@@ -85,6 +85,7 @@ public class ProblemManager {
         }
     }
 
+    // 객관식+주관식 혼합 문제
     public void mixedProblems(int i) {
         if (rand.nextInt(2) == 0)
             choiceProblems(i);
