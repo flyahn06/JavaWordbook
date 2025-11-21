@@ -31,6 +31,7 @@ public class SubjectiveProblem extends Problem{
         System.out.println(this.getProblem1());
     }
 
+    //뜻을 묻는 문제를 반환
     @Override
     public String getProblem1() {
         String str = problemNumber + ". 다음 단어의 뜻을 쓰시오.";
@@ -43,6 +44,8 @@ public class SubjectiveProblem extends Problem{
         System.out.println(this.getProblem2());
     }
 
+    //영단어를 묻는 문제를 반환
+    @Override
     public String getProblem2() {
         String str = problemNumber + ". 다음 뜻을 가진 단어를 쓰시오.";
         str += "\n" + "[ " + this.vm.getVoc().get(problem).getKor() + " ]";
