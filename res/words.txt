@@ -1,4 +1,4 @@
-at first	처음에는	0
+at first	처음에	0
 castle	성	0
 consider	고려하다, 간주하다	0
 considerable	상당한	0
@@ -7,7 +7,7 @@ explain	설명하다	0
 explanation	설명	0
 female	여성의	0
 frankly speaking	솔직히 말하여	0
-illegal	불법적인	1
+illegal	불법적인	0
 in the first place	처음으로	0
 in the place of	～대신에	0
 intelligent	지적인	0
@@ -34,22 +34,22 @@ education	교육	0
 educational	교육적인	0
 endow	부여하다, 기부하다	0
 endowment	기부, 기증	0
-inherit	상속하다, 이어받다	2
+inherit	상속하다, 이어받다	0
 inheritance	유전, 유산	0
-instead of	～대신에	1
+instead of	～대신에	0
 intelligence	지식	0
 lawful	법적인	0
 legal	합법적인	0
 male	남성의	0
 nowadays	최근에	0
-of late	최근에	1
+of late	최근에	0
 oppress	억압하다	0
 religion	종교	0
 religious	종교적인	0
 rib	갈비뼈	0
 sociable	사교적인	0
 social	사회적인	0
-socialize	사회화하다	1
+socialize	사회화하다	0
 society	사회	0
 state	상태, 진술하다	0
 symbolic	상징적인	0

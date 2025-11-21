@@ -16,7 +16,7 @@ public class SubjectiveProblem extends Problem{
         if (subjectiveType == 1) {
             String[] inputArray = input.split(",\\s*");
             for (String s : inputArray) {
-                result = this.vm.getVoc().get(problem).getKor().contains(s.trim());
+                result = this.vm.getVoc().get(problem).getKor().contains(s.trim()); //사용자가 입력한 단어뜻들이 단어장에 적힌 단어뜻들 중에 있는지 확인
                 if (!result) return false;
             }
             return true;

@@ -11,7 +11,7 @@ public class ChoiceProblem extends Problem {
     static Random rand = new Random();
 
     public ChoiceProblem(int problemNumber, String problem, VocManager vm) {
-        super(problemNumber,0,problem, vm);// word: 정답단어
+        super(problemNumber,0,problem, vm);
         Vector<String> engList = this.vm.getOrderedEnglish();
         int randomNumber;
 
@@ -21,9 +21,9 @@ public class ChoiceProblem extends Problem {
                 wrongWordList.add(engList.get(i));
             else i--;
         }
-        wordList.add(problem);
-        wordList.addAll(wrongWordList);
-        Collections.shuffle(wordList);
+        wordList.add(problem); // wordList에 정답단어 추가
+        wordList.addAll(wrongWordList); // wordList에 오답단어 추가
+        Collections.shuffle(wordList); // wordList 섞기
         answerNumber = wordList.indexOf(problem) + 1;
     }
 
