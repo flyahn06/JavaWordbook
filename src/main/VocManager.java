@@ -229,7 +229,7 @@ public class VocManager {
         try (PrintWriter outfile = new PrintWriter(filename)) {
             for (Word j : wrongAnswers) {
                 String str = j.getEng() + "\t" + j.getKor() + "\t" + j.getRanking();
-                outfile.println(str);
+                outfile.println(str); //파일에 str 작성
             }
             System.out.println("오답노트가 만들어졌습니다.");
         } catch (FileNotFoundException e) {
@@ -243,7 +243,7 @@ public class VocManager {
         filename = "res/" + filename;
         try (PrintWriter outfile = new PrintWriter(filename)) {
             for (String str : wp) {
-                outfile.println(str);
+                outfile.println(str); //파일에 str 작성
             }
             System.out.println("문제오답노트가 만들어졌습니다");
         } catch (FileNotFoundException e) {
@@ -253,7 +253,7 @@ public class VocManager {
 
     //정답률 계산후 scores.txt에 정답률 append하는 메서드
     public void writeCorrectRate(ProblemManager PM, int i) {
-        double correctRate = (double) PM.rightCount / PM.problemCount;
+        double correctRate = (double) PM.rightCount / PM.problemCount; //정답률
         String contentToAppend = i  + ", " +
                 this.userName + ", " +
                 this.fileName + ", " +
