@@ -23,6 +23,10 @@ public class RainFrame extends JFrame {
     private JLabel scoreLabel;
     private boolean isRunning;
     private int currentWords;
+    private UserInputWorker userInputWorker;
+    private ScreenUpdateWorker screenUpdateWorker;
+    private GenerateProblemWorker generateProblemWorker;
+    private int score;
 
     Container frame = this.getContentPane();
     Container gamePanel;
@@ -55,6 +59,8 @@ public class RainFrame extends JFrame {
     }
 
     private class ScreenUpdateWorker extends Thread {
+
+        @Override
         public void run() {
             ArrayList<RainEntity> removeList = new ArrayList<>();
 
@@ -66,11 +72,11 @@ public class RainFrame extends JFrame {
                         continue;
                     }
 
-                    if (entity.label.getY() >= 400) {
+                    if (entity.label.getY() >= 390) {
                         setRemainingHearts(getRemainingHearts() - 1);
                         if (getRemainingHearts() <= 0) {
-                            isRunning = false;
-                            return;
+                            endGame();
+                            break;
                         }
                         removeList.add(entity);
                         entity.label.setVisible(false);
@@ -90,12 +96,19 @@ public class RainFrame extends JFrame {
                     break;
                 }
             }
+
+            for (RainEntity entity: rainEntities) {
+                entity.label.setVisible(false);
+            }
+
+            rainEntities.clear();
         }
     }
 
     private class GenerateProblemWorker extends Thread {
         private static final Random random = new Random();
 
+        @Override
         public void run() {
             Vector<String> engWords = vm.getOrderedEnglish();
             String eng;
@@ -126,6 +139,29 @@ public class RainFrame extends JFrame {
         }
     }
 
+    private class UserInputWorker extends Thread {
+        @Override
+        public void run() {
+            while (isRunning) {
+                try {
+                    sleep(10);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        }
+
+        public void checkAnswer(String userAnswer) {
+            for (RainEntity entity: rainEntities) {
+                if (entity.isRight(userAnswer)) {
+                    entity.destroyed = true;
+                    setScore(getScore() + 50);
+                    currentWords--;
+                }
+            }
+        }
+    }
+
     public RainFrame(VocManager vm) {
         this.vm = vm;
 
@@ -148,6 +184,12 @@ public class RainFrame extends JFrame {
         wordInput = new JTextField();
         gamePanel = new JPanel();
         gamePanel.setLayout(null);
+
+        this.wordInput.addActionListener(e -> {
+            if (this.userInputWorker == null) return;
+            this.userInputWorker.checkAnswer(this.wordInput.getText().toLowerCase().trim());
+            this.wordInput.setText("");
+        });
 
         initNorthPanel();
         initMenu();
@@ -207,12 +249,20 @@ public class RainFrame extends JFrame {
     }
 
     private void run() {
-        ScreenUpdateWorker screenUpdateWorker = new ScreenUpdateWorker();
-        GenerateProblemWorker generateProblemWorker = new GenerateProblemWorker();
+        if (this.difficulty == -1) {
+            JOptionPane.showMessageDialog(null, "난이도를 먼저 선택하세요!", "산성비", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        this.setScore(0);
+        this.screenUpdateWorker = new ScreenUpdateWorker();
+        this.generateProblemWorker = new GenerateProblemWorker();
+        this.userInputWorker = new UserInputWorker();
 
         this.isRunning = true;
-        screenUpdateWorker.start();
-        generateProblemWorker.start();
+        this.screenUpdateWorker.start();
+        this.generateProblemWorker.start();
+        this.userInputWorker.start();
     }
 
     private void enableDifficultyMenu() {
@@ -231,7 +281,7 @@ public class RainFrame extends JFrame {
         this.difficultyMenus[to].setText(this.difficultyMenus[to].getText() + " ✔");
         this.difficulty = to;
 
-        this.setSpeed(10);
+        this.setSpeed(20);
         switch (difficulty) {
             case Difficulty.EASY -> {
                 this.setMaxWord(5);
@@ -251,6 +301,20 @@ public class RainFrame extends JFrame {
         }
 
         this.setTitle(vm.getFileName() + " 산성비 (난이도: " + this.getDifficulty() + ")");
+    }
+
+    private void endGame() {
+        this.isRunning = false;
+
+        this.generateProblemWorker = null;
+        this.userInputWorker = null;
+        this.screenUpdateWorker = null;
+
+        JOptionPane.showMessageDialog(null, "점수: " + this.score + "점", "Game Over",
+                JOptionPane.INFORMATION_MESSAGE);
+
+        this.setScore(0);
+        changeDifficulty(this.difficulty);
     }
 
     private void disableDifficultyMenu() {
@@ -276,6 +340,15 @@ public class RainFrame extends JFrame {
 
     public String getDifficulty() {
         return Difficulty.translateDifficulty(this.difficulty);
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+        this.scoreLabel.setText("점수: " + score + "점");
     }
 
     public int getMaxWord() {
