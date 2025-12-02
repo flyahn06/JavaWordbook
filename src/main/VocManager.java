@@ -184,7 +184,7 @@ public class VocManager {
             scan.nextLine();
 
             switch (choice) {
-                case 1 -> searchVoc();
+//                case 1 -> searchVoc();
                 case 2 -> searchVocPartial();
                 case 3 -> printAllWords();
                 case 4 -> addWordHelper();
@@ -388,17 +388,18 @@ public class VocManager {
         }
     }
 
-    public void searchVoc() {
-        System.out.print("검색할 단어를 입력하세요 (영단어): ");
-        String sWord = scan.nextLine();
+    public String searchVoc(String sWord) {
+//        System.out.print("검색할 단어를 입력하세요 (영단어): ");
         Word targetWord = this.voc.get(sWord);
 
         if (targetWord != null) {
-            System.out.println("단어의 뜻: " + targetWord.getKor());
+//            System.out.println("단어의 뜻: " + targetWord.getKor());
+            return targetWord.getKor();
         }
 
         else {
-            System.out.println("찾으시는 단어가 없습니다.");
+//            System.out.println("찾으시는 단어가 없습니다.");
+            return null;
         }
     }
 

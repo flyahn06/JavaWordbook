@@ -6,20 +6,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.Vector;
 
 public class RainFrame extends JFrame {
     private int difficulty = -1;
-    private VocManager vm;
+    private final VocManager vm;
     private int maxWord;
     private int speed;
     private int remainingHearts;
     private double speedMultiplicator;
-    private Vector<RainEntity> rainEntities;
+    private Vector<RainEntity> rainEntities = new Vector<>();
     private JMenuItem[] difficultyMenus;
-    private JLabel[] hearts;
-    private JPanel northPanel;
+    private final JLabel[] hearts;
     private JLabel scoreLabel;
+    private boolean isRunning;
+    private int currentWords;
 
     Container frame = this.getContentPane();
     Container gamePanel;
@@ -48,6 +51,78 @@ public class RainFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
             int difficulty = Integer.parseInt(e.getActionCommand());
             changeDifficulty(difficulty);
+        }
+    }
+
+    private class ScreenUpdateWorker extends Thread {
+        public void run() {
+            ArrayList<RainEntity> removeList = new ArrayList<>();
+
+            while (isRunning) {
+                for (RainEntity entity: rainEntities) {
+                    if (entity.destroyed) {
+                        removeList.add(entity);
+                        entity.label.setVisible(false);
+                        continue;
+                    }
+
+                    if (entity.label.getY() >= 400) {
+                        setRemainingHearts(getRemainingHearts() - 1);
+                        if (getRemainingHearts() <= 0) {
+                            isRunning = false;
+                            return;
+                        }
+                        removeList.add(entity);
+                        entity.label.setVisible(false);
+                        currentWords--;
+                    }
+
+                    entity.label.setLocation(entity.label.getX(), entity.label.getY() + (int)(speed * speedMultiplicator * 0.1));
+                }
+
+                rainEntities.removeAll(removeList);
+                removeList.clear();
+
+                try {
+//                    sleep((int)(1 / (speedMultiplicator * speed) * 1000));
+                    sleep(50);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }
+    }
+
+    private class GenerateProblemWorker extends Thread {
+        private static final Random random = new Random();
+
+        public void run() {
+            Vector<String> engWords = vm.getOrderedEnglish();
+            String eng;
+            String kor;
+            RainEntity ra;
+
+            while (isRunning) {
+                try {
+                    Thread.sleep(random.nextInt(1000) + 500);
+                } catch (InterruptedException e) {
+                    break;
+                }
+
+                if (currentWords >= maxWord) {
+                    continue;
+                }
+
+                eng = engWords.get(random.nextInt(engWords.size()));
+                kor = vm.searchVoc(eng);
+
+                ra = new RainEntity(new JLabel(kor), eng);
+                gamePanel.add(ra.label);
+                ra.label.setLocation(random.nextInt(700) + 50, 0);
+                ra.label.setSize(ra.label.getPreferredSize());
+                rainEntities.add(ra);
+                currentWords++;
+            }
         }
     }
 
@@ -82,19 +157,18 @@ public class RainFrame extends JFrame {
     }
 
     private void initNorthPanel() {
-        this.northPanel = new JPanel();
+        JPanel northPanel = new JPanel();
 
         this.scoreLabel = new JLabel("점수: 0");
-        this.northPanel.add(this.scoreLabel);
-        this.northPanel.add(new JLabel("    |     "));
+        northPanel.add(this.scoreLabel);
+        northPanel.add(new JLabel("    |     "));
 
         for (JLabel heart: this.hearts) {
             heart.setVisible(false);
-            this.northPanel.add(heart);
+            northPanel.add(heart);
         }
-        this.northPanel.setBackground(Color.ORANGE);
 
-        this.frame.add(this.northPanel, BorderLayout.NORTH);
+        this.frame.add(northPanel, BorderLayout.NORTH);
     }
 
     private void initMenu() {
@@ -102,10 +176,12 @@ public class RainFrame extends JFrame {
 
         JMenu gameMenu = new JMenu("게임");
         JMenuItem startMenu = new JMenuItem("게임 시작");
-        JMenuItem restartMenu = new JMenuItem("다시 하기");
-        JMenuItem exitMenu = new JMenuItem("게임 끝내기");
+        startMenu.addActionListener(e -> this.run());
+        JMenuItem stopMenu = new JMenuItem("게임 중지하기");
+        JMenuItem exitMenu = new JMenuItem("게임 나가기");
+
         gameMenu.add(startMenu);
-        gameMenu.add(restartMenu);
+        gameMenu.add(stopMenu);
         gameMenu.add(exitMenu);
         mb.add(gameMenu);
 
@@ -131,7 +207,12 @@ public class RainFrame extends JFrame {
     }
 
     private void run() {
+        ScreenUpdateWorker screenUpdateWorker = new ScreenUpdateWorker();
+        GenerateProblemWorker generateProblemWorker = new GenerateProblemWorker();
 
+        this.isRunning = true;
+        screenUpdateWorker.start();
+        generateProblemWorker.start();
     }
 
     private void enableDifficultyMenu() {
@@ -150,6 +231,7 @@ public class RainFrame extends JFrame {
         this.difficultyMenus[to].setText(this.difficultyMenus[to].getText() + " ✔");
         this.difficulty = to;
 
+        this.setSpeed(10);
         switch (difficulty) {
             case Difficulty.EASY -> {
                 this.setMaxWord(5);
