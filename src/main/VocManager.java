@@ -24,7 +24,7 @@ public class VocManager {
         }
     }
 
-    VocManager(String userName) {
+    public VocManager(String userName) {
         this.userName = userName;
         this.voc = new HashMap<>();
         this.orderedEnglish = new Vector<>();
@@ -45,7 +45,7 @@ public class VocManager {
             this.orderedEnglish.add(eng);
     }
 
-    boolean makeVoc(String fileName) {
+    public boolean makeVoc(String fileName) {
         int rank;
         // makeVoc이 실패한 경우 이전의 voc, orderedEnglish를 써야 하기 때문에
         // 임시로 만든 후 함수의 마지막에서 바꿔야 함
