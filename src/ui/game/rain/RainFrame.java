@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RainFrame extends JFrame {
     private int difficulty = -1;
@@ -17,7 +18,7 @@ public class RainFrame extends JFrame {
     private int speed;
     private int remainingHearts;
     private double speedMultiplicator;
-    private Vector<RainEntity> rainEntities = new Vector<>();
+    private CopyOnWriteArrayList<RainEntity> rainEntities = new CopyOnWriteArrayList<>();
     private JMenuItem[] difficultyMenus;
     private final JLabel[] hearts;
     private JLabel scoreLabel;
@@ -63,6 +64,7 @@ public class RainFrame extends JFrame {
         @Override
         public void run() {
             ArrayList<RainEntity> removeList = new ArrayList<>();
+            currentWords = 0;
 
             while (isRunning) {
                 for (RainEntity entity: rainEntities) {
@@ -129,12 +131,14 @@ public class RainFrame extends JFrame {
                 eng = engWords.get(random.nextInt(engWords.size()));
                 kor = vm.searchVoc(eng);
 
-                ra = new RainEntity(new JLabel(kor), eng);
-                gamePanel.add(ra.label);
-                ra.label.setLocation(random.nextInt(700) + 50, 0);
-                ra.label.setSize(ra.label.getPreferredSize());
-                rainEntities.add(ra);
-                currentWords++;
+                if (isRunning) {
+                    ra = new RainEntity(new JLabel(kor), eng);
+                    gamePanel.add(ra.label);
+                    ra.label.setLocation(random.nextInt(700) + 50, 0);
+                    ra.label.setSize(ra.label.getPreferredSize());
+                    rainEntities.add(ra);
+                    currentWords++;
+                }
             }
         }
     }
@@ -220,6 +224,7 @@ public class RainFrame extends JFrame {
         JMenuItem startMenu = new JMenuItem("게임 시작");
         startMenu.addActionListener(e -> this.run());
         JMenuItem stopMenu = new JMenuItem("게임 중지하기");
+        stopMenu.addActionListener(e -> this.endGame());
         JMenuItem exitMenu = new JMenuItem("게임 나가기");
 
         gameMenu.add(startMenu);
