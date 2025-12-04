@@ -1,0 +1,112 @@
+package ui.main;
+
+import main.VocManager;
+import ui.main.edit.AddWordDialog;
+import ui.main.edit.DeleteWordDialog;
+import ui.main.edit.EditWordDialog;
+import ui.main.file.LoadFileDialog;
+import ui.main.file.SaveFileDialog;
+import ui.main.quiz.QuizDialog;
+import ui.main.quiz.QuizTop10Dialog;
+import ui.main.search.PartialSearchDialog;
+import ui.main.search.PrintAllWordsDialog;
+import ui.main.search.SearchWordDialog;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class MainFrame extends JFrame {
+
+    VocManager vm;
+
+    public MainFrame(VocManager vm) {
+        this.vm = vm;
+        setTitle(vm.getUserName() + "님의 단어장");
+        setSize(500, 600);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        initUI();
+    }
+
+    private void initUI() {
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+
+        mainPanel.add(createMenuSection("검색",
+                new String[]{"단어 검색", "부분 검색", "전체 단어 출력"},
+                new Runnable[]{
+                        () -> new SearchWordDialog(this, vm),
+                        () -> new PartialSearchDialog(this, vm),
+                        () -> new PrintAllWordsDialog(this, vm)
+                }
+        ));
+
+        mainPanel.add(createMenuSection("수정",
+                new String[]{"단어 추가", "단어 수정", "단어 삭제"},
+                new Runnable[]{
+                        () -> new AddWordDialog(this, vm),
+                        () -> new EditWordDialog(this, vm),
+                        () -> new DeleteWordDialog(this, vm)
+                }
+        ));
+
+        mainPanel.add(createMenuSection("퀴즈",
+                new String[]{"퀴즈 풀기", "오답률 Top10 집중학습"},
+                new Runnable[]{
+                        () -> new QuizDialog(this, vm),
+                        () -> new QuizTop10Dialog(this, vm)
+                }
+        ));
+
+        mainPanel.add(createMenuSection("파일",
+                new String[]{"파일 저장", "파일 불러오기"},
+                new Runnable[]{
+                        () -> new SaveFileDialog(this, vm),
+                        () -> new LoadFileDialog(this, vm)
+                }
+        ));
+
+        add(new JScrollPane(mainPanel));
+    }
+
+    private JPanel createMenuSection(String title, String[] subTitles, Runnable[] actions) {
+
+        JPanel section = new JPanel();
+        section.setLayout(new BoxLayout(section, BoxLayout.Y_AXIS));
+
+        // 상단메뉴 버튼
+        JButton menuBtn = new JButton(title + " ▼");
+        menuBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // 서브메뉴 패널
+        JPanel submenuPanel = new JPanel();
+        submenuPanel.setLayout(new BoxLayout(submenuPanel, BoxLayout.Y_AXIS));
+        submenuPanel.setVisible(false);
+        submenuPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        for (int i = 0; i < subTitles.length; i++) {
+            JButton btn = new JButton("   · " + subTitles[i]);
+            btn.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            final int idx = i;
+            btn.addActionListener(e -> actions[idx].run());
+
+            submenuPanel.add(btn);
+        }
+
+        menuBtn.addActionListener(e -> {
+            boolean visible = submenuPanel.isVisible();
+            submenuPanel.setVisible(!visible);
+
+            menuBtn.setText(title + (visible ? " ▼" : " ▲"));
+
+            SwingUtilities.getWindowAncestor(menuBtn).validate();
+        });
+
+        section.add(menuBtn);
+        section.add(submenuPanel);
+
+        return section;
+    }
+}

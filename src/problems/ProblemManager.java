@@ -7,10 +7,10 @@ import java.util.*;
 
 public class ProblemManager {
     public int problemCount;
-    int problemType;
-    String[] problems;
+    public int problemType;
+    public String[] problems;
     public int rightCount;
-    int wrongCount;
+    public int wrongCount;
     VocManager vm;
     public Vector<String> wrongProblems = new Vector<String>();
     public Vector<Word> wrongWords = new Vector<Word>();
@@ -177,7 +177,7 @@ public class ProblemManager {
      * @param with
      * 문제를 만들 영단어의 vector입니다. 중복은 허용되나, generateQuiz가 동작하는 동안에는 이 Vector의 모든 element가 vm.voc.key에 있음이 보장되어야 합니다.
      */
-    private void generateQuiz(Vector<String> with) {
+    public void generateQuiz(Vector<String> with) {
         Collections.shuffle(with);
 
         while(with.size() < problemCount) {

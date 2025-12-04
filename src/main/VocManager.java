@@ -9,11 +9,11 @@ import java.util.*;
 public class VocManager {
     static Scanner scan = new Scanner(System.in);
     public HashMap<String, Word> voc;
-    Vector<String> orderedEnglish;
+    public Vector<String> orderedEnglish;
     String userName;
     static int i; //몇 번째 오답노트인지 구별하기 위한 변수임
     String fileName;
-    static Translator translator = new Translator();
+    public static Translator translator = new Translator();
     static final String isNumericRegex = "\\d+";
 
     static {
@@ -38,7 +38,7 @@ public class VocManager {
         return new Vector<String>(this.orderedEnglish);
     }
 
-    void addWord(String eng, String kor, int ranking) {
+    public void addWord(String eng, String kor, int ranking) {
         this.voc.put(eng, new Word(eng, kor, ranking));
 
         if (!this.orderedEnglish.contains(eng))
@@ -63,7 +63,7 @@ public class VocManager {
                 // 한 요소가 누락된 경우
                 // 이 행을 건너뜀
                 if (lineSplit.length < 3) {
-                    System.out.printf("파일 %s에 문제가 있습니다.\n\t행(%s)이 잘못된 형식입니다.\n", this.fileName, line);
+                    //System.out.printf("파일 %s에 문제가 있습니다.\n\t행(%s)이 잘못된 형식입니다.\n", this.fileName, line);
                     continue;
                 }
 
@@ -72,7 +72,7 @@ public class VocManager {
                 try {
                     rank = Integer.parseInt(lineSplit[2].trim());
                 } catch (NumberFormatException e) {
-                    System.out.printf("파일 %s에 문제가 있습니다.\n\t행(%s)의 3번째 원소가 문자가 아닙니다.\n", this.fileName, line);
+                    //System.out.printf("파일 %s에 문제가 있습니다.\n\t행(%s)의 3번째 원소가 문자가 아닙니다.\n", this.fileName, line);
                     rank = 0;
                 }
 
@@ -82,7 +82,7 @@ public class VocManager {
             }
 
             // 제대로 생성된 경우
-            System.out.printf("%s님의 단어장 생성완료\n", this.userName);
+            //System.out.printf("%s님의 단어장 생성완료\n", this.userName);
             this.fileName = fileName;
             this.voc = tempVoc;
             this.orderedEnglish = tempOrderedEnglish;
@@ -90,12 +90,14 @@ public class VocManager {
         } catch (FileNotFoundException e) {
             // 이 경우에는 this.voc, this.fileName, this.orderedEnglish에 아무런 변화가 없기 때문에
             // 이전에 로딩해 둔 단어장을 그대로 사용가능함
-            System.out.println("파일을 찾을 수 없습니다.");
+            //System.out.println("파일을 찾을 수 없습니다.");
             return false;
         }
 
         return true;
     }
+
+    public String getUserName() { return userName; }
 
     public String getFileName() {
         return this.fileName;

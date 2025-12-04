@@ -27,6 +27,11 @@ public class ChoiceProblem extends Problem {
         answerNumber = wordList.indexOf(problem) + 1;
     }
 
+    public List<String> getWordList() { return wordList; }
+
+    public int getAnswerNumber() {
+        return answerNumber;
+    }
 
     @Override
     public boolean isCorrect(String input) {

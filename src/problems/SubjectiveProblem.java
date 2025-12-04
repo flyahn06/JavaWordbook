@@ -3,7 +3,7 @@ package problems;
 import main.VocManager;
 
 public class SubjectiveProblem extends Problem{
-    int subjectiveType;
+    public int subjectiveType;
     boolean result;
     public SubjectiveProblem(int problemNumber, String problem, VocManager vm, int subjectiveType) {
         super(problemNumber, 1, problem, vm);
