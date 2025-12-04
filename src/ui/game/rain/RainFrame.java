@@ -3,6 +3,7 @@ package ui.game.rain;
 import main.VocManager;
 
 import javax.swing.*;
+import javax.xml.stream.FactoryConfigurationError;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +21,7 @@ public class RainFrame extends JFrame {
     private double speedMultiplicator;
     private CopyOnWriteArrayList<RainEntity> rainEntities = new CopyOnWriteArrayList<>();
     private JMenuItem[] difficultyMenus;
+    private JMenuItem[] gameMenus;
     private final JLabel[] hearts;
     private JLabel scoreLabel;
     private boolean isRunning;
@@ -225,11 +227,18 @@ public class RainFrame extends JFrame {
         startMenu.addActionListener(e -> this.run());
         JMenuItem stopMenu = new JMenuItem("게임 중지하기");
         stopMenu.addActionListener(e -> this.endGame());
+        stopMenu.setEnabled(false);
         JMenuItem exitMenu = new JMenuItem("게임 나가기");
 
         gameMenu.add(startMenu);
         gameMenu.add(stopMenu);
         gameMenu.add(exitMenu);
+
+        this.gameMenus = new JMenuItem[3];
+        this.gameMenus[0] = startMenu;
+        this.gameMenus[1] = stopMenu;
+        this.gameMenus[2] = exitMenu;
+
         mb.add(gameMenu);
 
         JMenu difficultyMenu = new JMenu("난이도");
@@ -265,6 +274,15 @@ public class RainFrame extends JFrame {
         this.userInputWorker = new UserInputWorker();
 
         this.isRunning = true;
+
+        this.gameMenus[0].setEnabled(false);
+        this.gameMenus[1].setEnabled(true);
+        this.gameMenus[2].setEnabled(false);
+
+        for (JMenuItem menuItem: this.difficultyMenus) {
+            menuItem.setEnabled(false);
+        }
+
         this.screenUpdateWorker.start();
         this.generateProblemWorker.start();
         this.userInputWorker.start();
@@ -319,6 +337,15 @@ public class RainFrame extends JFrame {
                 JOptionPane.INFORMATION_MESSAGE);
 
         this.setScore(0);
+
+        this.gameMenus[0].setEnabled(true);
+        this.gameMenus[1].setEnabled(false);
+        this.gameMenus[2].setEnabled(true);
+
+        for (JMenuItem menuItem: this.difficultyMenus) {
+            menuItem.setEnabled(true);
+        }
+
         changeDifficulty(this.difficulty);
     }
 
