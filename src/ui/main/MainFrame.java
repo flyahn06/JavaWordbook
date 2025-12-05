@@ -16,24 +16,25 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
-
+    Container frame = this.getContentPane();
+    JPanel cardWordsPanel;
     VocManager vm;
 
     public MainFrame(VocManager vm) {
         this.vm = vm;
         setTitle(vm.getUserName() + "님의 단어장");
-        setSize(500, 600);
+        setSize(1000, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        initUI();
+        initLayout();
     }
 
-    private void initUI() {
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+    private void initLayout() {
+        JPanel menuPanel = new JPanel();
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
 
-        mainPanel.add(createMenuSection("검색",
+        menuPanel.add(createMenuSection("검색",
                 new String[]{"단어 검색", "부분 검색", "전체 단어 출력"},
                 new Runnable[]{
                         () -> new SearchWordDialog(this, vm),
@@ -42,7 +43,7 @@ public class MainFrame extends JFrame {
                 }
         ));
 
-        mainPanel.add(createMenuSection("수정",
+        menuPanel.add(createMenuSection("수정",
                 new String[]{"단어 추가", "단어 수정", "단어 삭제"},
                 new Runnable[]{
                         () -> new AddWordDialog(this, vm),
@@ -51,7 +52,7 @@ public class MainFrame extends JFrame {
                 }
         ));
 
-        mainPanel.add(createMenuSection("퀴즈",
+        menuPanel.add(createMenuSection("퀴즈",
                 new String[]{"퀴즈 풀기", "오답률 Top10 집중학습"},
                 new Runnable[]{
                         () -> new QuizDialog(this, vm),
@@ -59,15 +60,25 @@ public class MainFrame extends JFrame {
                 }
         ));
 
-        mainPanel.add(createMenuSection("파일",
+        menuPanel.add(createMenuSection("파일",
                 new String[]{"파일 저장", "파일 불러오기"},
                 new Runnable[]{
                         () -> new SaveFileDialog(this, vm),
                         () -> new LoadFileDialog(this, vm)
                 }
         ));
+        
+        initCardWordsLayout();
 
-        add(new JScrollPane(mainPanel));
+        this.frame.add(new JScrollPane(menuPanel), BorderLayout.WEST);
+    }
+
+    private void initCardWordsLayout() {
+        this.cardWordsPanel = new JPanel(new GridLayout(5, 5));
+
+//        this.cardWordsPanel.setBackground(Color.BLUE);
+
+        this.frame.add(this.cardWordsPanel, BorderLayout.CENTER);
     }
 
     private JPanel createMenuSection(String title, String[] subTitles, Runnable[] actions) {
