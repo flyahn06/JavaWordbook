@@ -76,9 +76,27 @@ public class MainFrame extends JFrame {
     private void initCardWordsLayout() {
         this.cardWordsPanel = new JPanel(new GridLayout(5, 5));
 
-//        this.cardWordsPanel.setBackground(Color.BLUE);
+        this.updateCardPanel();
 
-        this.frame.add(this.cardWordsPanel, BorderLayout.CENTER);
+        this.frame.add(new JScrollPane(this.cardWordsPanel), BorderLayout.CENTER);
+    }
+
+    private void updateCardPanel() {
+        CardEntity card1 = new CardEntity(this.vm.getVoc().get("consider"));
+        CardEntity card2 = new CardEntity(this.vm.getVoc().get("law"));
+        CardEntity card3 = new CardEntity(this.vm.getVoc().get("considerable"));
+
+        this.cardWordsPanel.add(card1.entity);
+        this.cardWordsPanel.add(card2.entity);
+        this.cardWordsPanel.add(card3.entity);
+        this.cardWordsPanel.add(card3.entity);
+        this.cardWordsPanel.add(card3.entity);
+        this.cardWordsPanel.add(card3.entity);
+        this.cardWordsPanel.add(card3.entity);
+        this.cardWordsPanel.add(card3.entity);
+        this.cardWordsPanel.add(card3.entity);
+        this.cardWordsPanel.add(card3.entity);
+        this.cardWordsPanel.add(card3.entity);
     }
 
     private JPanel createMenuSection(String title, String[] subTitles, Runnable[] actions) {

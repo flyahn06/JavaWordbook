@@ -9,6 +9,7 @@ public class Word {
     String eng;
     Vector<String> kor;
     int ranking;
+    private boolean starred = false;
 
     public Word(String eng, String kor, int ranking) {
         this.eng = eng;
@@ -22,6 +23,14 @@ public class Word {
         this.kor = new Vector<>();
         this.ranking = Integer.parseInt(ranking);
         this.setKor(kor);
+    }
+
+    public boolean isStarred() {
+        return this.starred;
+    }
+
+    public void setStarred(boolean starred) {
+        this.starred = starred;
     }
 
     public String getEng() { return eng; }
