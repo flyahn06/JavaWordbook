@@ -35,6 +35,7 @@ public class DeleteWordDialog extends JDialog {
                 JOptionPane.showMessageDialog(this, "단어가 삭제되었습니다.");
             }
 
+            mainFrame.initCardWordsLayout();
             dispose();
         });
 

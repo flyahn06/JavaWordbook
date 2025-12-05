@@ -3,6 +3,7 @@ package ui.main;
 import java.util.List;
 import main.VocManager;
 import main.Word;
+import ui.game.rain.RainFrame;
 import ui.main.edit.AddWordDialog;
 import ui.main.edit.DeleteWordDialog;
 import ui.main.edit.EditWordDialog;
@@ -17,18 +18,23 @@ import ui.main.search.SearchWordDialog;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Vector;
 
 public class MainFrame extends JFrame {
     Container frame = this.getContentPane();
     JPanel cardWordsPanel;
     VocManager vm;
     JScrollPane scrollPane;
+    Vector<WordCard> wordCards;
 
     public MainFrame(VocManager vm) {
         this.vm = vm;
+        this.wordCards = new Vector<>();
         setTitle(vm.getUserName() + "님의 단어장");
         setSize(1000, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -59,11 +65,12 @@ public class MainFrame extends JFrame {
                 }
         ));
 
-        menuPanel.add(createMenuSection("퀴즈",
-                new String[]{"퀴즈 풀기", "오답률 Top10 집중학습"},
+        menuPanel.add(createMenuSection("퀴즈 / 게임",
+                new String[]{"퀴즈 풀기", "오답률 Top10 집중학습", "산성비"},
                 new Runnable[]{
                         () -> new QuizDialog(this, vm),
-                        () -> new QuizTop10Dialog(this, vm)
+                        () -> new QuizTop10Dialog(this, vm),
+                        () -> new RainFrame(this, vm)
                 }
         ));
 
@@ -76,17 +83,75 @@ public class MainFrame extends JFrame {
         ));
         
         initCardWordsLayout();
+        initSearchLayout();
 
         this.frame.add(new JScrollPane(menuPanel), BorderLayout.WEST);
     }
 
-    public void initCardWordsLayout() {
-//        this.cardWordsPanel = new JPanel(new GridLayout(5, 5));
-//
-//        this.cardWordsPanel.setBackground(Color.BLUE);
-//
-//        this.frame.add(this.cardWordsPanel, BorderLayout.CENTER);
+    private void initSearchLayout() {
+        JPanel northPanel = new JPanel();
 
+        JTextField engField = new JTextField(30);
+        JButton searchButton = new JButton("검색");
+
+        engField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                update();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                update();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                update();
+            }
+
+            public void update() {
+                String searchText = engField.getText().trim().toLowerCase();
+
+                if (searchText.isEmpty()) {
+                    for (WordCard wordCard: wordCards)
+                        wordCard.setVisible(true);
+                }
+
+                for (WordCard wordCard: wordCards) {
+                    wordCard.setVisible(wordCard.word.getEng().indexOf(searchText) == 0);
+                }
+
+                revalidate();
+                repaint();
+            }
+        });
+
+        searchButton.addActionListener(e -> {
+            String searchText = engField.getText().trim().toLowerCase();
+
+            if (searchText.isEmpty()) {
+                for (WordCard wordCard: this.wordCards)
+                    wordCard.setVisible(true);
+            }
+
+            for (WordCard wordCard: this.wordCards) {
+                wordCard.setVisible(wordCard.word.getEng().indexOf(searchText) == 0);
+            }
+
+            revalidate();
+            repaint();
+        });
+
+        northPanel.add(new JLabel("검색"));
+        northPanel.add(engField);
+        northPanel.add(searchButton);
+
+        this.frame.add(northPanel, BorderLayout.NORTH);
+
+    }
+
+    public void initCardWordsLayout() {
         // 1. 세로로 구간들을 쌓을 메인 패널 생성
         JPanel mainListPanel = new JPanel();
         mainListPanel.setLayout(new BoxLayout(mainListPanel, BoxLayout.Y_AXIS));
@@ -102,7 +167,6 @@ public class MainFrame extends JFrame {
 
         // 3. VocManager에서 단어 데이터 가져오기
         List<Word> allWords = vm.getAllWords();
-        System.out.println(allWords);
 
         if (allWords == null || allWords.isEmpty()) {
             JLabel emptyLabel = new JLabel("단어가 없습니다. 단어를 추가해주세요.", SwingConstants.CENTER);
@@ -228,6 +292,7 @@ public class MainFrame extends JFrame {
         private final JButton toggleButton;
 
         public SectionPanel(String title, List<Word> words) {
+            WordCard card;
             setLayout(new BorderLayout());
             setBackground(new Color(245, 245, 245));
             setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -254,7 +319,9 @@ public class MainFrame extends JFrame {
 
             // 전달받은 Word 리스트로 카드 생성
             for (Word w : words) {
-                contentPanel.add(new WordCard(w));
+                card = new WordCard(w);
+                contentPanel.add(card);
+                wordCards.add(card);
             }
             add(contentPanel, BorderLayout.CENTER);
 

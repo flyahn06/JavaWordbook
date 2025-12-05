@@ -11,7 +11,7 @@ public class AddWordDialog extends JDialog {
         super(mainFrame,"단어 추가",true);
 
         setLayout(new GridLayout(3, 2, 10, 10));
-        setSize(400, 180);
+        setSize(300, 150);
         setLocationRelativeTo(mainFrame);
 
         JLabel engLabel = new JLabel("추가할 단어:");

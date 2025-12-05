@@ -1,6 +1,7 @@
 package ui.game.rain;
 
 import main.VocManager;
+import ui.main.MainFrame;
 
 import javax.swing.*;
 import javax.xml.stream.FactoryConfigurationError;
@@ -30,6 +31,7 @@ public class RainFrame extends JFrame {
     private ScreenUpdateWorker screenUpdateWorker;
     private GenerateProblemWorker generateProblemWorker;
     private int score;
+    private MainFrame mainFrame;
 
     Container frame = this.getContentPane();
     Container gamePanel;
@@ -168,8 +170,9 @@ public class RainFrame extends JFrame {
         }
     }
 
-    public RainFrame(VocManager vm) {
+    public RainFrame(MainFrame mainFrame, VocManager vm) {
         this.vm = vm;
+        this.mainFrame = mainFrame;
 
         this.hearts = new JLabel[5];
 
@@ -183,6 +186,11 @@ public class RainFrame extends JFrame {
         this.setLocationRelativeTo(null);
         this.initLayout();
         this.setResizable(false);
+        this.mainFrame.setVisible(false);
+
+        JOptionPane.showMessageDialog(null, "산성비 게임은 현재 단어장의 전체 단어로 진행됩니다.\n화면에 출력되는 " +
+                "단어는 중복될 수 있습니다.\n메뉴에서 난이도를 선택한 후, 게임 시작 메뉴를 누르세요!", "산성비 게임", JOptionPane.INFORMATION_MESSAGE);
+
         this.setVisible(true);
     }
 
@@ -229,6 +237,10 @@ public class RainFrame extends JFrame {
         stopMenu.addActionListener(e -> this.endGame());
         stopMenu.setEnabled(false);
         JMenuItem exitMenu = new JMenuItem("게임 나가기");
+        exitMenu.addActionListener(e -> {
+            this.mainFrame.setVisible(true);
+            dispose();
+        });
 
         gameMenu.add(startMenu);
         gameMenu.add(stopMenu);
@@ -405,11 +417,5 @@ public class RainFrame extends JFrame {
 
     public void setSpeedMultiplicator(double speedMultiplicator) {
         this.speedMultiplicator = speedMultiplicator;
-    }
-
-    public static void main(String[] args) {
-        VocManager manager = new VocManager("홍길동");
-        manager.makeVoc("res/words.txt");
-        new RainFrame(manager);
     }
 }

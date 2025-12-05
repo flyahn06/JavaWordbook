@@ -75,6 +75,7 @@ public class EditWordDialog extends JDialog {
                 default -> JOptionPane.showMessageDialog(this, "잘못된 옵션입니다.");
             }
 
+            mainFrame.initCardWordsLayout();
             dispose();
         });
 
