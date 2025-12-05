@@ -25,6 +25,7 @@ public class MainFrame extends JFrame {
     Container frame = this.getContentPane();
     JPanel cardWordsPanel;
     VocManager vm;
+    JScrollPane scrollPane;
 
     public MainFrame(VocManager vm) {
         this.vm = vm;
@@ -79,7 +80,7 @@ public class MainFrame extends JFrame {
         this.frame.add(new JScrollPane(menuPanel), BorderLayout.WEST);
     }
 
-    private void initCardWordsLayout() {
+    public void initCardWordsLayout() {
 //        this.cardWordsPanel = new JPanel(new GridLayout(5, 5));
 //
 //        this.cardWordsPanel.setBackground(Color.BLUE);
@@ -92,12 +93,16 @@ public class MainFrame extends JFrame {
         mainListPanel.setBackground(Color.WHITE);
 
         // 2. 스크롤 패널에 메인 패널 담기
-        JScrollPane scrollPane = new JScrollPane(mainListPanel);
+        if (scrollPane != null) {
+            this.frame.remove(scrollPane);
+        }
+        scrollPane = new JScrollPane(mainListPanel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16); // 스크롤 속도
         this.frame.add(scrollPane, BorderLayout.CENTER);
 
         // 3. VocManager에서 단어 데이터 가져오기
         List<Word> allWords = vm.getAllWords();
+        System.out.println(allWords);
 
         if (allWords == null || allWords.isEmpty()) {
             JLabel emptyLabel = new JLabel("단어가 없습니다. 단어를 추가해주세요.", SwingConstants.CENTER);
@@ -123,6 +128,8 @@ public class MainFrame extends JFrame {
             mainListPanel.add(section);
             mainListPanel.add(Box.createVerticalStrut(15)); // 구간 사이 여백
         }
+
+        revalidate();
     }
 
     private JPanel createMenuSection(String title, String[] subTitles, Runnable[] actions) {
@@ -230,7 +237,7 @@ public class MainFrame extends JFrame {
             header.setOpaque(false);
             header.setBorder(new EmptyBorder(0, 0, 10, 0));
 
-            JLabel titleLabel = new JLabel("⭐ " + title);
+            JLabel titleLabel = new JLabel(title);
             titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 16));
 
             toggleButton = new JButton("펼치기 ∨");

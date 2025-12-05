@@ -51,7 +51,7 @@ public class AddWordDialog extends JDialog {
             }
 
             if (kor.isEmpty() || kor.equals("?")) {
-                kor = vm.translator.getMeaning(eng);
+                kor = VocManager.translator.getMeaning(eng);
                 if (kor == null) {
                     JOptionPane.showMessageDialog(this, "단어의 뜻을 찾을 수 없습니다!");
                     return;
@@ -63,6 +63,7 @@ public class AddWordDialog extends JDialog {
 
             vm.addWord(eng, kor, 0);
             JOptionPane.showMessageDialog(this, "단어가 잘 추가되었습니다.");
+            mainFrame.initCardWordsLayout();
             dispose();
         });
 
