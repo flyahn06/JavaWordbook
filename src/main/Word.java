@@ -58,6 +58,7 @@ public class Word {
     }
 
 
+
     public void setRanking(int ranking) { this.ranking = ranking; }
 
     @Override

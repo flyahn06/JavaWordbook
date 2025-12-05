@@ -38,6 +38,19 @@ public class VocManager {
         return new Vector<String>(this.orderedEnglish);
     }
 
+    public List<Word> getAllWords() {
+        Vector<Word> allWords = new Vector<>();
+
+        // 순서가 저장된 orderedEnglish 벡터를 순회하며 Word 객체를 리스트에 담음
+        for (String key : this.orderedEnglish) {
+            Word w = this.voc.get(key);
+            if (w != null) {
+                allWords.add(w);
+            }
+        }
+        return allWords;
+    }
+
     public void addWord(String eng, String kor, int ranking) {
         this.voc.put(eng, new Word(eng, kor, ranking));
 

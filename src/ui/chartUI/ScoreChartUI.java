@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 /**
  * scores.txt 파일에서 데이터를 읽어 정답률(rate)을 기준으로 막대 그래프를 생성하는 UI 애플리케이션
- * JFreeChart 라이브러리가 필요합니다.
+ * JFreeChart 라이브러리가 필요
  */
 
 public class ScoreChartUI extends JFrame {
@@ -28,10 +28,10 @@ public class ScoreChartUI extends JFrame {
     private static final String FILE_NAME = "res/scores.txt";
     private JComboBox<String> detailComboBox;
 
-    // 1. 원본 데이터를 저장할 멤버 변수
+    // 원본 데이터를 저장할 멤버 변수
     private List<ScoreData> originalDataList;
 
-    // 2. 차트 패널을 교체하기 위해 멤버 변수로 선언
+    // 차트 패널을 교체하기 위해 멤버 변수로 선언
     private ChartPanel chartPanel;
 
     // 파일에서 읽어온 데이터를 저장할 클래스
@@ -53,16 +53,16 @@ public class ScoreChartUI extends JFrame {
         super("정답률 그래프");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // 1. 데이터 읽기 및 저장
+        // 데이터 읽기 및 저장
         this.originalDataList = readDataFromFile(FILE_NAME);
         List<String> comboboxItems = createUniqueNameFileCombinations(originalDataList);
 
-        // 2. 콤보박스 생성
+        // 콤보박스 생성
         String[] displayItems = comboboxItems.toArray(new String[0]);
         detailComboBox = new JComboBox<>(displayItems);
         detailComboBox.addActionListener(e -> updateDisplay());
 
-        // 3. UI 구성
+        // UI 구성
         JPanel controlPanel = new JPanel();
         controlPanel.add(new JLabel("기록 선택:"));
         controlPanel.add(detailComboBox);
@@ -70,7 +70,7 @@ public class ScoreChartUI extends JFrame {
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
 
-        // 4. 초기 그래프 생성 및 패널에 추가
+        // 초기 그래프 생성 및 패널에 추가
         DefaultCategoryDataset initialDataset = createDataset(originalDataList);
         JFreeChart initialChart = createChart(initialDataset, "전체 사용자 정답률");
 
