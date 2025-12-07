@@ -1,7 +1,5 @@
 package main;
 
-import api.Translator;
-
 import java.util.Objects;
 import java.util.Vector;
 

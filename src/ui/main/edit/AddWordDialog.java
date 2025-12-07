@@ -14,6 +14,36 @@ public class AddWordDialog extends JDialog {
     JTextField engField;
     JTextField korField;
 
+    private class GetMeaningWorker extends SwingWorker<String, Void> {
+        private final String eng;
+
+        public GetMeaningWorker(String eng) {
+            this.eng = eng;
+        }
+
+        @Override
+        protected String doInBackground() {
+            return VocManager.translator.getMeaning(eng);
+        }
+
+        @Override
+        protected void done() {
+            try {
+                String kor = get();
+
+                if (kor == null) {
+                    JOptionPane.showMessageDialog(AddWordDialog.this, "단어의 뜻을 찾을 수 없습니다!");
+                    engField.setText("");
+                    korField.setText("");
+                } else {
+                    korField.setText(kor);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(AddWordDialog.this, "오류가 발생했습니다.");
+            }
+        }
+    }
+
     public AddWordDialog(MainFrame mainFrame, VocManager vm) {
         super(mainFrame,"단어 추가",true);
 
@@ -69,6 +99,10 @@ public class AddWordDialog extends JDialog {
             return;
         }
 
+        if (kor.trim().equals("검색 중...")) {
+            return;
+        }
+
         if (vm.getVoc().get(eng) != null) {
             int option = JOptionPane.showConfirmDialog(
                     this,
@@ -82,15 +116,10 @@ public class AddWordDialog extends JDialog {
         }
 
         if (kor.isEmpty() || kor.equals("?")) {
-            kor = VocManager.translator.getMeaning(eng);
-            if (kor == null) {
-                JOptionPane.showMessageDialog(this, "단어의 뜻을 찾을 수 없습니다!");
-                return;
-            } else {
-                JOptionPane.showMessageDialog(this, "검색된 뜻: " + kor);
-            }
+            this.korField.setText("검색 중...");
+            new GetMeaningWorker(eng).execute();
+            return;
         }
-
 
         vm.addWord(eng, kor, 0);
         JOptionPane.showMessageDialog(this, "단어가 잘 추가되었습니다.");
