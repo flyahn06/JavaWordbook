@@ -5,15 +5,23 @@ import main.Word;
 import ui.main.MainFrame;
 
 import javax.swing.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class DeleteWordDialog extends JDialog {
+    JTextField textField;
+    MainFrame mainFrame;
+    VocManager vm;
+
     public DeleteWordDialog(MainFrame mainFrame, VocManager vm) {
         super(mainFrame,"단어 삭제",true);
 
+        this.mainFrame = mainFrame;
+        this.vm = vm;
         setSize(300, 150);
         setLocationRelativeTo(mainFrame);
 
-        JTextField textField = new JTextField(10);
+        textField = new JTextField(10);
         JButton deleteButton = new JButton("삭제");
 
         JPanel panel = new JPanel();
@@ -22,23 +30,32 @@ public class DeleteWordDialog extends JDialog {
         panel.add(deleteButton);
         add(panel);
 
-        deleteButton.addActionListener(e -> {
-            String eng = textField.getText().trim();
-            Word targetWord = vm.getVoc().get(eng);
-
-            if (targetWord == null) {
-                JOptionPane.showMessageDialog(this, "단어를 찾을 수 없습니다.");
-                return;
-            } else {
-                vm.voc.remove(eng,targetWord);
-                vm.orderedEnglish.remove(eng);
-                JOptionPane.showMessageDialog(this, "단어가 삭제되었습니다.");
+        deleteButton.addActionListener(e -> action());
+        textField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyChar() == KeyEvent.VK_ENTER)
+                    action();
             }
-
-            mainFrame.initCardWordsLayout();
-            dispose();
         });
 
         setVisible(true);
+    }
+
+    public void action() {
+        String eng = textField.getText().trim();
+        Word targetWord = vm.getVoc().get(eng);
+
+        if (targetWord == null) {
+            JOptionPane.showMessageDialog(this, "단어를 찾을 수 없습니다.");
+            return;
+        } else {
+            vm.voc.remove(eng,targetWord);
+            vm.orderedEnglish.remove(eng);
+            JOptionPane.showMessageDialog(this, "단어가 삭제되었습니다.");
+        }
+
+        mainFrame.initCardWordsLayout();
+        dispose();
     }
 }
