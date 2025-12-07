@@ -8,6 +8,10 @@ import ui.main.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Vector;
@@ -30,7 +34,7 @@ public class QuizDialog extends JDialog {
         this.pm = new ProblemManager(vm);
 
         setSize(300, 150);
-        setLocationRelativeTo(mainFrame);
+        setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
         initProblemSettings(); // 문제 유형,수 설정 UI 초기화
@@ -112,11 +116,24 @@ public class QuizDialog extends JDialog {
     private void showResult() {
         String result = "퀴즈가 종료되었습니다.\n정답: "+pm.rightCount+"\n오답: "+pm.wrongCount;
         JOptionPane.showMessageDialog(this,result);
+
+        int option = JOptionPane.showConfirmDialog(null, "상세 오답노트를 만드시겠습니까?", "오답노트",
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (option == JOptionPane.YES_OPTION) {
+            this.vm.WAnotes2(this.pm.wrongProblems);
+        } else {
+            this.vm.WAnotes(this.pm.wrongWords);
+        }
+        this.vm.writeCorrectRate(this.pm, VocManager.i - 1);
+        VocManager.i++;
         dispose();
     }
 
     private void choiceProblemUI(String problem, int problemNumber) {
+        StringBuilder temp = new StringBuilder();
 
+        JLabel questionLabel;
         getContentPane().removeAll();   // 기존 화면 지우기
         setLayout(new BorderLayout(10,10));
 
@@ -125,14 +142,14 @@ public class QuizDialog extends JDialog {
         boolean isEngToKor = (rand.nextInt(2) == 0);
 
         if (isEngToKor) {
-            JLabel questionLabel = new JLabel(
+            questionLabel = new JLabel(
                     problemNumber + ". '" + problem + "' 의 뜻을 고르시오.",
                     SwingConstants.CENTER
             );
             questionLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 18));
             add(questionLabel, BorderLayout.NORTH);
         } else {
-            JLabel questionLabel = new JLabel(
+            questionLabel = new JLabel(
                     problemNumber + ". '" + vm.getVoc().get(problem).getKor() + "' 의 영단어를 고르시오.",
                     SwingConstants.CENTER
             );
@@ -140,13 +157,13 @@ public class QuizDialog extends JDialog {
             add(questionLabel, BorderLayout.NORTH);
         }
 
+        temp.append(questionLabel.getText() + "\n");
+
         // 보기 버튼들
         JPanel choicePanel = new JPanel(new GridLayout(2, 2, 10, 10));
         add(choicePanel, BorderLayout.CENTER);
 
         JButton[] btn = new JButton[4];
-
-
 
         for(int i = 0; i < 4; i++) {
             String text = isEngToKor
@@ -154,6 +171,7 @@ public class QuizDialog extends JDialog {
                     : cp.getWordList().get(i);
 
             btn[i] = new JButton(i+1 + ") " +text);
+            temp.append(i+1 + ") " + text + "\n");
             choicePanel.add(btn[i]);
 
             int choiceNumber = i + 1;
@@ -166,7 +184,10 @@ public class QuizDialog extends JDialog {
                     pm.wrongCount++;
                     JOptionPane.showMessageDialog(this,
                             "오답입니다!\n정답: " + cp.getAnswerNumber() + "번");
+                    temp.append("정답: " + cp.getAnswerNumber() + "번" + " (내 답: " + choiceNumber + "번)\n");
                     vm.rank(problem);
+                    pm.wrongProblems.add(temp.toString());
+                    pm.wrongWords.add(vm.voc.get(pm.problems[currentProblemIndex]));
                 }
 
                 currentProblemIndex++;
@@ -179,6 +200,7 @@ public class QuizDialog extends JDialog {
     }
 
     private void subjectiveProblemUI(String problem, int problemNumber) {
+        StringBuilder temp;
 
         // 화면 초기화
         getContentPane().removeAll();
@@ -195,15 +217,17 @@ public class QuizDialog extends JDialog {
         questionLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 18));
         questionLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        temp = new StringBuilder();
         if (sp.subjectiveType == 1) {
             questionLabel.setText(problemNumber + ". '" + problem + "' 의 뜻을 입력하세요.");
+            temp.append(questionLabel.getText());
         } else {
             String korMeaning = vm.getVoc().get(problem).getKor();
             questionLabel.setText(problemNumber + ". '" + korMeaning + "' 의 영단어를 입력하세요.");
+            temp.append(questionLabel.getText());
         }
 
         add(questionLabel, BorderLayout.NORTH);
-
 
         answerField = new JTextField();
         answerField.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
@@ -213,8 +237,7 @@ public class QuizDialog extends JDialog {
         submitBtn.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
         add(submitBtn, BorderLayout.SOUTH);
 
-        submitBtn.addActionListener(e -> {
-
+        ActionListener event = e -> {
             String userInput = answerField.getText().trim();
 
             if (userInput.isEmpty()) {
@@ -231,20 +254,33 @@ public class QuizDialog extends JDialog {
                             this,
                             "오답입니다.\n정답: " + vm.getVoc().get(problem).getKor()
                     );
+                    temp.append("\n정답: " + vm.getVoc().get(problem).getKor() + " (내 답: " + userInput + ")\n");
                 } else {
                     JOptionPane.showMessageDialog(
                             this,
                             "오답입니다.\n정답: " + problem
                     );
+                    temp.append("\n정답: " + problem + " (내 답: " + userInput + ")\n");
                 }
 
                 pm.wrongCount++;
                 vm.rank(problem);
+                pm.wrongProblems.add(temp.toString());
+                pm.wrongWords.add(vm.voc.get(pm.problems[currentProblemIndex]));
             }
 
             // 다음 문제로 진행
             currentProblemIndex++;
             showNextProblem();
+        };
+
+        submitBtn.addActionListener(event);
+        answerField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                    event.actionPerformed(null);
+            }
         });
 
         revalidate();

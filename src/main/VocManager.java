@@ -11,7 +11,7 @@ public class VocManager {
     public HashMap<String, Word> voc;
     public Vector<String> orderedEnglish;
     String userName;
-    static int i; //몇 번째 오답노트인지 구별하기 위한 변수임
+    public static int i; //몇 번째 오답노트인지 구별하기 위한 변수임
     String fileName;
     public static Translator translator = new Translator();
     static final String isNumericRegex = "\\d+";

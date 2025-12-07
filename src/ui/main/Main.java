@@ -3,6 +3,8 @@ package ui.main;
 import main.VocManager;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 
 public class Main {
@@ -46,6 +48,16 @@ public class Main {
         }
 
         MainFrame mainFrame = new MainFrame(manager);
+        mainFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                JOptionPane.showMessageDialog(null, name + "의 단어장 프로그램을 종료합니다.", "안내",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                manager.vocToFile(manager.getFileName());
+                manager.savei();
+            }
+        });
         mainFrame.setVisible(true);
     }
 }
