@@ -51,7 +51,6 @@ public class ScoreChartUI extends JFrame {
 
     public ScoreChartUI() {
         super("정답률 그래프");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // 데이터 읽기 및 저장
         this.originalDataList = readDataFromFile(FILE_NAME);
@@ -64,7 +63,7 @@ public class ScoreChartUI extends JFrame {
 
         // UI 구성
         JPanel controlPanel = new JPanel();
-        controlPanel.add(new JLabel("기록 선택:"));
+        controlPanel.add(new JLabel("기록 선택(사용자-파일명):"));
         controlPanel.add(detailComboBox);
 
         Container contentPane = getContentPane();
@@ -133,13 +132,16 @@ public class ScoreChartUI extends JFrame {
 
         // 단일 조합을 선택했으므로, 이 목록에는 중복된 name-filename 쌍이 포함됩니다.
         // 이를 개별 항목으로 구분하여 표시하기 위해 idx를 함께 사용합니다.
+        int i = 1;
+
         for (ScoreData data : dataList) {
             // 카테고리를 (idx)로 설정하여 해당 기록을 고유하게 식별
-            String category = String.format("(idx: %d)", data.idx);
+            String category = String.valueOf(i);
             String series = data.name + "-" + data.filename;
 
             // 정답률 (rate) 값 추가
             dataset.addValue(data.rate, series, category);
+            i++;
         }
         return dataset;
     }
@@ -254,9 +256,5 @@ public class ScoreChartUI extends JFrame {
                 renderer.setBaseItemLabelFont(font.deriveFont(12f));
             }
         }
-    }
-
-    public static void main(String[] args) {
-        new ScoreChartUI().setVisible(true);
     }
 }

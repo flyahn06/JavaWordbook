@@ -3,6 +3,7 @@ package ui.main;
 import java.util.List;
 import main.VocManager;
 import main.Word;
+import ui.chartUI.ScoreChartUI;
 import ui.game.rain.RainFrame;
 import ui.main.edit.AddWordDialog;
 import ui.main.edit.DeleteWordDialog;
@@ -79,6 +80,13 @@ public class MainFrame extends JFrame {
                 new Runnable[]{
                         () -> new SaveFileDialog(this, vm),
                         () -> new LoadFileDialog(this, vm)
+                }
+        ));
+
+        menuPanel.add(createMenuSection("차트",
+                new String[]{"차트 확인"},
+                new Runnable[]{
+                        () -> new ScoreChartUI().setVisible(true)
                 }
         ));
         
