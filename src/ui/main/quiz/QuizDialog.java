@@ -29,7 +29,7 @@ public class QuizDialog extends JDialog {
         this.vm = vm;
         this.pm = new ProblemManager(vm);
 
-        setSize(500, 400);
+        setSize(300, 150);
         setLocationRelativeTo(mainFrame);
         setLayout(new BorderLayout(10, 10));
 
@@ -81,6 +81,8 @@ public class QuizDialog extends JDialog {
                 }
 
                 getContentPane().removeAll(); // 기존 UI 제거
+                setLocationRelativeTo(null);
+                setSize(500, 400);
                 showNextProblem();
 
             } catch (NumberFormatException ex) {
